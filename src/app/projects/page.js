@@ -163,18 +163,18 @@ export default function ProjectsPage() {
           <p className="text-primary-300 font-semibold text-sm uppercase tracking-wider mb-3">What We Build</p>
           <h1 className="text-4xl md:text-5xl font-black text-white mb-4">Final Year Projects</h1>
           <p className="text-primary-200 text-lg max-w-2xl mx-auto leading-relaxed">
-            10,000+ project topics across 8 engineering domains. Every project includes IEEE paper, source code, hardware, and complete documentation.
+            5,000+ project topics across 8 engineering domains. Every project includes IEEE paper, source code, hardware, and complete documentation.
           </p>
         </div>
       </section>
 
-      {/* ── Filter tabs ── */}
-      <div className="sticky top-16 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
+      {/* ── Filter grid ── */}
+      <div className="bg-white border-b border-slate-100 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-wrap gap-2 justify-center">
             <button
               onClick={() => setActive('All')}
-              className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 min-h-[44px] ${
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 min-h-[40px] ${
                 active === 'All'
                   ? 'bg-primary-700 text-white shadow-md shadow-primary-700/30'
                   : 'text-slate-600 bg-slate-100 hover:bg-slate-200'
@@ -189,13 +189,12 @@ export default function ProjectsPage() {
                 <button
                   key={d.title}
                   onClick={() => setActive(d.title)}
-                  className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 min-h-[44px] ${
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 min-h-[40px] ${
                     isActive ? `${c.tab} shadow-md` : `${c.tabIdle} hover:opacity-80`
                   }`}
                 >
                   <d.icon size={14} />
-                  <span className="hidden sm:inline">{d.title}</span>
-                  <span className="sm:hidden">{d.title.split(' ')[0]}</span>
+                  {d.title}
                 </button>
               );
             })}

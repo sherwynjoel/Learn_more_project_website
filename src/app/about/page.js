@@ -116,7 +116,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
               { value: '7,000+',  label: 'Students Supported' },
-              { value: '10,000+', label: 'Projects Delivered' },
+              { value: '5,000+', label: 'Projects Delivered' },
               { value: '40+',     label: 'IEEE Papers Published' },
               { value: '10+',     label: 'Years of Excellence' },
             ].map((s) => (

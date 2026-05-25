@@ -61,13 +61,13 @@ const WhatsAppIcon = () => (
 const socialLinks = [
   {
     label: 'Instagram',
-    href: 'https://www.instagram.com/learnmoreprojects',
+    href: 'https://www.instagram.com/learnmore_projects?igsh=MTlkOXlxM3c0ZHU5Zg==',
     Icon: InstagramIcon,
     color: 'hover:bg-pink-600',
   },
   {
     label: 'YouTube',
-    href: 'https://www.youtube.com/@learnmoreprojects',
+    href: 'https://youtube.com/@learnmoreprojects?si=H_E_ybTFd4vkhvT0',
     Icon: YouTubeIcon,
     color: 'hover:bg-red-600',
   },
@@ -145,7 +145,7 @@ export default function Footer() {
                 info@learnmoreprojects.in
               </a>
               <a
-                href="https://maps.google.com/?q=202+Nehru+St+Peranaidu+Layout+Ram+Nagar+Coimbatore+641009"
+                href="https://maps.app.goo.gl/Gcp69fQ9ky6sZv4M9"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-start gap-2.5 text-sm text-slate-400 hover:text-white transition-colors"

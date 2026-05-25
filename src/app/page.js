@@ -85,7 +85,7 @@ const testimonials = [
 
 const stats = [
   { value: '7,000+',  label: 'Students Supported', icon: Users },
-  { value: '10,000+', label: 'Projects Delivered',  icon: FlaskConical },
+  { value: '5,000+', label: 'Projects Delivered',  icon: FlaskConical },
   { value: '8+',      label: 'Domains Covered',     icon: Cpu },
   { value: '10+',     label: 'Years of Excellence', icon: Award },
 ];
@@ -140,7 +140,7 @@ export default function HomePage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-500 opacity-70" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-primary-500" />
                 </span>
-                Coimbatore's Premier R&D Center
+                Coimbatore's Premier Project Center
               </div>
 
               <h1 className="animate-fade-in-d1 text-4xl sm:text-5xl lg:text-[4.25rem] font-black text-slate-900 leading-[1.08] tracking-tight">
@@ -182,7 +182,7 @@ export default function HomePage() {
               <div className="animate-fade-in-d3 mt-8 grid grid-cols-2 gap-3 lg:hidden">
                 {[
                   { value: '7,000+',  label: 'Students Supported', color: 'text-primary-700' },
-                  { value: '10,000+', label: 'Projects Delivered',  color: 'text-teal-700'   },
+                  { value: '5,000+', label: 'Projects Delivered',  color: 'text-teal-700'   },
                   { value: '10+',     label: 'Years of Excellence', color: 'text-purple-700'  },
                   { value: '95%+',    label: 'Success Rate',        color: 'text-green-700'   },
                 ].map((s) => (
@@ -216,7 +216,7 @@ export default function HomePage() {
                     <Award size={16} className="text-primary-600" />
                   </div>
                   <div>
-                    <p className="text-lg font-black text-slate-900 leading-none">10,000+</p>
+                    <p className="text-lg font-black text-slate-900 leading-none">5,000+</p>
                     <p className="text-xs text-slate-500 font-medium mt-0.5">Projects Delivered</p>
                   </div>
                 </div>
@@ -474,7 +474,7 @@ export default function HomePage() {
                   </div>
                   <p className="text-2xl sm:text-3xl font-black text-white">95%+ Project Success Rate</p>
                 </div>
-                <p className="text-slate-400 text-sm">Across 10,000+ projects delivered since 2018 — measured by viva clearance, submission acceptance, and student satisfaction.</p>
+                <p className="text-slate-400 text-sm">Across 5,000+ projects delivered since 2018 — measured by viva clearance, submission acceptance, and student satisfaction.</p>
               </div>
               <a
                 href="https://wa.me/917550191838?text=Hi%2C%20I%20want%20to%20enquire%20about%20final%20year%20projects%20at%20LearnMore%20Projects"

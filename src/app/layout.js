@@ -59,10 +59,10 @@ const localBusinessSchema = {
       closes: '19:00',
     },
   ],
-  hasMap: 'https://maps.google.com/?q=202+Nehru+St+Peranaidu+Layout+Ram+Nagar+Coimbatore+641009',
+  hasMap: 'https://maps.app.goo.gl/Gcp69fQ9ky6sZv4M9',
   sameAs: [
-    'https://www.instagram.com/learnmoreprojects',
-    'https://www.youtube.com/@learnmoreprojects',
+    'https://www.instagram.com/learnmore_projects?igsh=MTlkOXlxM3c0ZHU5Zg==',
+    'https://youtube.com/@learnmoreprojects?si=H_E_ybTFd4vkhvT0',
   ],
 };
 

@@ -157,7 +157,7 @@ export default function ContactPage() {
                   referrerPolicy="no-referrer-when-downgrade"
                 />
                 <a
-                  href="https://maps.google.com/?q=202+Nehru+St+Peranaidu+Layout+Ram+Nagar+Coimbatore+641009"
+                  href="https://maps.app.goo.gl/Gcp69fQ9ky6sZv4M9"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 bg-white py-3 text-primary-700 font-semibold text-sm hover:bg-primary-50 transition-colors min-h-[44px]"

@@ -1,85 +1,11 @@
 import Link from 'next/link';
-import { CheckCircle2, X, MessageCircle, ArrowRight, Clock, Package, Award, Shield } from 'lucide-react';
+import { MessageCircle, ArrowRight, Clock, Package, Award, Shield } from 'lucide-react';
 
 export const metadata = {
   title: 'Pricing | LearnMore Projects — Final Year Project Packages',
-  description: 'Transparent pricing for final year projects in Coimbatore. Basic, Standard, and Premium IEEE project packages starting from ₹4,999.',
+  description: 'Transparent pricing for final year projects in Coimbatore. WhatsApp us for a custom project quote tailored to your branch, budget, and deadline.',
 };
 
-const tiers = [
-  {
-    name: 'Basic',
-    subtitle: 'Code & Report',
-    price: '4,999',
-    badge: null,
-    color: 'border-slate-200',
-    headerBg: 'bg-slate-50',
-    btnClass: 'bg-slate-800 hover:bg-slate-900 text-white',
-    includes: [
-      'Complete source code (commented)',
-      'Circuit / block diagram',
-      'Basic project report (20–30 pages)',
-      'PowerPoint presentation',
-      '1 month WhatsApp support',
-    ],
-    excludes: [
-      'Hardware components',
-      'PCB / working prototype',
-      'IEEE base paper',
-      'Viva Q&A preparation',
-      'Publication guidance',
-    ],
-    ideal: 'Students who already have hardware or need software only.',
-  },
-  {
-    name: 'Standard',
-    subtitle: 'Full Project Kit',
-    price: '9,999',
-    badge: 'Most Popular',
-    color: 'border-primary-500 ring-2 ring-primary-200',
-    headerBg: 'bg-primary-700',
-    headerText: 'text-white',
-    btnClass: 'bg-primary-700 hover:bg-primary-800 text-white shadow-lg shadow-primary-700/30',
-    includes: [
-      'Everything in Basic',
-      'Hardware components kit',
-      'Working prototype / PCB',
-      'IEEE base paper sourced & explained',
-      'Full project report (40–60 pages)',
-      'Synopsys & viva Q&A (30+ questions)',
-      '3 months WhatsApp support',
-      'Live demo session',
-    ],
-    excludes: [
-      'IEEE Xplore publication',
-      'Patent filing guidance',
-    ],
-    ideal: 'Most final year students — complete project with hardware, code, and full documentation.',
-  },
-  {
-    name: 'Premium',
-    subtitle: 'IEEE Research Grade',
-    price: '16,999',
-    badge: 'Best Results',
-    color: 'border-slate-800',
-    headerBg: 'bg-slate-900',
-    headerText: 'text-white',
-    btnClass: 'bg-slate-900 hover:bg-slate-950 text-white',
-    includes: [
-      'Everything in Standard',
-      'Novel IEEE paper + publication guidance',
-      'SCOPUS / Springer indexing support',
-      'Patent filing guidance',
-      'Advanced hardware with custom PCB',
-      'Conference paper preparation',
-      '6 months WhatsApp support',
-      'Placement & internship referral',
-      'Priority support (2-hour response)',
-    ],
-    excludes: [],
-    ideal: 'M.E. / M.Tech / Ph.D students, SIH participants, and ambitious undergrads targeting placements.',
-  },
-];
 
 const timeline = [
   { day: 'Day 1–2',   title: 'Free Consultation',      desc: 'We understand your branch, year, and institution requirements. Topic shortlisted.' },
@@ -104,84 +30,21 @@ export default function PricingPage() {
       <section className="bg-gradient-to-br from-primary-950 to-primary-800 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-primary-300 font-semibold text-sm uppercase tracking-wider mb-3">Transparent Pricing</p>
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">Simple, Honest Packages</h1>
+          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">Simple, Honest Pricing</h1>
           <p className="text-primary-200 text-lg max-w-2xl mx-auto leading-relaxed">
-            No hidden charges. No surprises. Pick the package that fits your needs — or WhatsApp us for a custom quote.
+            No hidden charges. No surprises. Pricing depends on your domain, hardware complexity, and timeline — WhatsApp us for a free custom quote in minutes.
           </p>
+          <a
+            href="https://wa.me/917550191838?text=Hi%2C%20I%20want%20to%20know%20the%20pricing%20for%20my%20final%20year%20project%20at%20LearnMore%20Projects"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex items-center gap-2 bg-white text-primary-700 font-bold text-sm px-6 py-3 rounded-xl hover:bg-primary-50 transition-colors min-h-[44px]"
+          >
+            <MessageCircle size={16} /> Get a Free Quote on WhatsApp
+          </a>
         </div>
       </section>
 
-      {/* Pricing tiers */}
-      <section className="py-14 md:py-20 bg-slate-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-            {tiers.map((tier) => (
-              <div key={tier.name} className={`relative bg-white rounded-3xl border ${tier.color} overflow-hidden flex flex-col`}>
-                {tier.badge && (
-                  <div className="absolute top-4 right-4 z-10 bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
-                    {tier.badge}
-                  </div>
-                )}
-
-                {/* Header */}
-                <div className={`${tier.headerBg} p-6 pb-8`}>
-                  <p className={`font-black text-2xl ${tier.headerText ?? 'text-slate-900'}`}>{tier.name}</p>
-                  <p className={`text-sm font-medium mt-0.5 ${tier.headerText ? 'text-white/70' : 'text-slate-500'}`}>{tier.subtitle}</p>
-                  <div className="mt-5 flex items-end gap-1">
-                    <span className={`text-xs font-semibold ${tier.headerText ? 'text-white/70' : 'text-slate-400'}`}>Starting from</span>
-                  </div>
-                  <div className="flex items-baseline gap-1 mt-1">
-                    <span className={`text-4xl font-black ${tier.headerText ?? 'text-slate-900'}`}>₹{tier.price}</span>
-                  </div>
-                  <p className={`text-xs mt-2 ${tier.headerText ? 'text-white/60' : 'text-slate-400'}`}>Final price depends on hardware complexity</p>
-                </div>
-
-                {/* Body */}
-                <div className="p-6 flex flex-col flex-1">
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">What's included</p>
-                  <ul className="space-y-2.5 mb-6 flex-1">
-                    {tier.includes.map((item) => (
-                      <li key={item} className="flex items-start gap-2.5">
-                        <CheckCircle2 size={15} className="text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-slate-700 text-sm">{item}</span>
-                      </li>
-                    ))}
-                    {tier.excludes.map((item) => (
-                      <li key={item} className="flex items-start gap-2.5 opacity-40">
-                        <X size={15} className="text-slate-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-slate-500 text-sm">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {tier.ideal && (
-                    <div className="bg-slate-50 rounded-xl p-3 mb-5 border border-slate-100">
-                      <p className="text-xs text-slate-500 leading-relaxed"><span className="font-semibold text-slate-700">Ideal for:</span> {tier.ideal}</p>
-                    </div>
-                  )}
-
-                  <a
-                    href={`https://wa.me/917550191838?text=Hi%2C%20I%27m%20interested%20in%20the%20${encodeURIComponent(tier.name)}%20package%20at%20LearnMore%20Projects`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`w-full flex items-center justify-center gap-2 font-bold text-sm px-5 py-3.5 rounded-xl transition-all duration-200 min-h-[48px] ${tier.btnClass}`}
-                  >
-                    <MessageCircle size={16} />
-                    Get {tier.name} Package
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <p className="text-center text-slate-400 text-sm mt-8">
-            Not sure which to pick?{' '}
-            <a href="https://wa.me/917550191838?text=Hi%2C%20I%20need%20help%20choosing%20a%20package%20at%20LearnMore%20Projects" target="_blank" rel="noopener noreferrer" className="text-primary-700 font-semibold hover:underline">
-              WhatsApp us and we'll recommend the right one for you.
-            </a>
-          </p>
-        </div>
-      </section>
 
       {/* Delivery timeline */}
       <section className="py-14 md:py-20 bg-white">

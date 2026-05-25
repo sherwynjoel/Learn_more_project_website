@@ -83,7 +83,7 @@ const projects = [
 ];
 
 const outcomes = [
-  { value: '10,000+', label: 'Projects Completed' },
+  { value: '5,000+', label: 'Projects Completed' },
   { value: '95%', label: 'Viva Pass Rate' },
   { value: '40+', label: 'IEEE Papers Published' },
   { value: '3', label: 'Patents Filed' },
