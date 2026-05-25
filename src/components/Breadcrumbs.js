@@ -13,6 +13,8 @@ const labels = {
   blog:      'Blog & Resources',
   about:     'About Us',
   contact:   'Contact',
+  privacy:   'Privacy Policy',
+  terms:     'Terms & Conditions',
   domains:   'Domains',
   'top-final-year-projects-ece-2025':    'Top ECE Projects 2025',
   'how-to-clear-final-year-viva':        'How to Clear Viva',
