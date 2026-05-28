@@ -141,7 +141,7 @@ function BlogTab() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-black text-slate-900">Blog Posts</h2>
-          <p className="text-slate-400 text-sm mt-0.5">{posts.length} admin-added post{posts.length !== 1 ? 's' : ''}</p>
+          <p className="text-slate-400 text-sm mt-0.5">{posts.length + HARDCODED_BLOGS.length} total · {posts.length} by you · {HARDCODED_BLOGS.length} built-in</p>
         </div>
         <button onClick={openAdd}
           className="flex items-center gap-2 bg-primary-700 hover:bg-primary-800 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors">
@@ -344,7 +344,7 @@ function ProjectsTab() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-black text-slate-900">Projects</h2>
-          <p className="text-slate-400 text-sm mt-0.5">{projects.length} admin-added project{projects.length !== 1 ? 's' : ''}</p>
+          <p className="text-slate-400 text-sm mt-0.5">{projects.length + HARDCODED_PROJECTS.length} total · {projects.length} by you · {HARDCODED_PROJECTS.length} built-in</p>
         </div>
         <button onClick={openAdd}
           className="flex items-center gap-2 bg-primary-700 hover:bg-primary-800 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors">
@@ -558,12 +558,14 @@ export default function AdminPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="bg-white rounded-2xl border border-slate-100 px-6 py-5">
-            <p className="text-3xl font-black text-primary-700">{blogs.length}</p>
-            <p className="text-slate-500 text-sm font-medium mt-1">Blog Posts Added</p>
+            <p className="text-3xl font-black text-primary-700">{blogs.length + HARDCODED_BLOGS.length}</p>
+            <p className="text-slate-500 text-sm font-medium mt-0.5">Total Blog Posts</p>
+            <p className="text-xs text-slate-400 mt-1">{blogs.length} by you · {HARDCODED_BLOGS.length} built-in</p>
           </div>
           <div className="bg-white rounded-2xl border border-slate-100 px-6 py-5">
-            <p className="text-3xl font-black text-primary-700">{projects.length}</p>
-            <p className="text-slate-500 text-sm font-medium mt-1">Projects Added</p>
+            <p className="text-3xl font-black text-primary-700">{projects.length + HARDCODED_PROJECTS.length}</p>
+            <p className="text-slate-500 text-sm font-medium mt-0.5">Total Projects</p>
+            <p className="text-xs text-slate-400 mt-1">{projects.length} by you · {HARDCODED_PROJECTS.length} built-in</p>
           </div>
         </div>
 
