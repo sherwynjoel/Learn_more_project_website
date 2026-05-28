@@ -7,7 +7,7 @@ import {
   Lock, LogOut, Plus, Trash2, BookOpen, FolderOpen,
   Download, Eye, AlertTriangle, CheckCircle2, X, Pencil,
 } from 'lucide-react';
-import { adminAuth, blogStore, projectStore } from '@/lib/adminStore';
+import { adminAuth, blogStore, projectStore, hiddenStore } from '@/lib/adminStore';
 
 const HARDCODED_BLOGS = [
   { slug: 'top-final-year-projects-ece-2025', category: 'Project Ideas', title: 'Top 20 Final Year Projects for ECE Students in 2025', readTime: '8 min read', date: 'May 2025' },
@@ -84,12 +84,16 @@ function LoginScreen({ onLogin }) {
 /* ─── Blog Tab ─── */
 function BlogTab() {
   const [posts, setPosts] = useState([]);
+  const [hiddenBlogs, setHiddenBlogs] = useState([]);
   const [form, setForm] = useState(emptyBlog);
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [saved, setSaved] = useState('');
 
-  useEffect(() => { setPosts(blogStore.getAll()); }, []);
+  useEffect(() => {
+    setPosts(blogStore.getAll());
+    setHiddenBlogs(hiddenStore.getHiddenBlogs());
+  }, []);
 
   const openAdd = () => { setForm(emptyBlog); setEditingId(null); setShowForm(true); };
   const openEdit = (post) => { setForm({ title: post.title, category: post.category, excerpt: post.excerpt, content: post.content, readTime: post.readTime }); setEditingId(post.id); setShowForm(true); };
@@ -113,6 +117,23 @@ function BlogTab() {
     if (!confirm('Delete this blog post?')) return;
     blogStore.delete(id);
     setPosts(blogStore.getAll());
+  };
+
+  const handleBuiltinEdit = (post) => {
+    setForm({ title: post.title, category: post.category, excerpt: '', content: '', readTime: post.readTime });
+    setEditingId(null);
+    setShowForm(true);
+  };
+
+  const handleBuiltinDelete = (slug) => {
+    if (!confirm('Hide this built-in article from the blog page?')) return;
+    hiddenStore.hideBuiltinBlog(slug);
+    setHiddenBlogs(hiddenStore.getHiddenBlogs());
+  };
+
+  const handleBuiltinRestore = (slug) => {
+    hiddenStore.showBuiltinBlog(slug);
+    setHiddenBlogs(hiddenStore.getHiddenBlogs());
   };
 
   return (
@@ -216,22 +237,45 @@ function BlogTab() {
       <div>
         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Built-in Articles</p>
         <div className="space-y-3">
-          {HARDCODED_BLOGS.map(post => (
-            <div key={post.slug} className="flex items-start justify-between gap-4 bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="text-xs font-semibold text-slate-600 bg-slate-200 px-2 py-0.5 rounded-full">{post.category}</span>
-                  <span className="text-xs text-slate-400">{post.readTime}</span>
-                  <span className="text-xs text-slate-400">{post.date}</span>
+          {HARDCODED_BLOGS.map(post => {
+            const isHidden = hiddenBlogs.includes(post.slug);
+            return (
+              <div key={post.slug} className={`flex items-start justify-between gap-4 rounded-2xl px-5 py-4 border ${isHidden ? 'bg-rose-50 border-rose-100 opacity-60' : 'bg-slate-50 border-slate-200'}`}>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="text-xs font-semibold text-slate-600 bg-slate-200 px-2 py-0.5 rounded-full">{post.category}</span>
+                    <span className="text-xs text-slate-400">{post.readTime}</span>
+                    <span className="text-xs text-slate-400">{post.date}</span>
+                    {isHidden && <span className="text-xs font-semibold text-rose-600 bg-rose-100 px-2 py-0.5 rounded-full">Hidden</span>}
+                  </div>
+                  <p className="font-bold text-slate-700 text-sm leading-snug">{post.title}</p>
                 </div>
-                <p className="font-bold text-slate-700 text-sm leading-snug">{post.title}</p>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  {!isHidden && (
+                    <a href={`/blog/${post.slug}`} target="_blank" rel="noreferrer"
+                      className="p-2 text-slate-400 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors" title="View">
+                      <Eye size={15} />
+                    </a>
+                  )}
+                  <button onClick={() => handleBuiltinEdit(post)}
+                    className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit (create new version)">
+                    <Pencil size={15} />
+                  </button>
+                  {isHidden ? (
+                    <button onClick={() => handleBuiltinRestore(post.slug)}
+                      className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors text-xs font-semibold" title="Restore">
+                      Restore
+                    </button>
+                  ) : (
+                    <button onClick={() => handleBuiltinDelete(post.slug)}
+                      className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Hide from blog">
+                      <Trash2 size={15} />
+                    </button>
+                  )}
+                </div>
               </div>
-              <a href={`/blog/${post.slug}`} target="_blank" rel="noreferrer"
-                className="p-2 text-slate-400 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors flex-shrink-0" title="View">
-                <Eye size={15} />
-              </a>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
@@ -241,12 +285,16 @@ function BlogTab() {
 /* ─── Projects Tab ─── */
 function ProjectsTab() {
   const [projects, setProjects] = useState([]);
+  const [hiddenProjects, setHiddenProjects] = useState([]);
   const [form, setForm] = useState(emptyProject);
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [saved, setSaved] = useState('');
 
-  useEffect(() => { setProjects(projectStore.getAll()); }, []);
+  useEffect(() => {
+    setProjects(projectStore.getAll());
+    setHiddenProjects(hiddenStore.getHiddenProjects());
+  }, []);
 
   const difficultyColor = { Easy: 'text-green-700 bg-green-50', Medium: 'text-amber-700 bg-amber-50', Hard: 'text-rose-700 bg-rose-50' };
 
@@ -272,6 +320,23 @@ function ProjectsTab() {
     if (!confirm('Delete this project?')) return;
     projectStore.delete(id);
     setProjects(projectStore.getAll());
+  };
+
+  const handleBuiltinProjectEdit = (d) => {
+    setForm({ title: '', domain: d.domain, description: '', tech: '', difficulty: 'Medium', duration: '25–30 days' });
+    setEditingId(null);
+    setShowForm(true);
+  };
+
+  const handleBuiltinProjectDelete = (domain) => {
+    if (!confirm('Hide this built-in domain from the projects page?')) return;
+    hiddenStore.hideBuiltinProject(domain);
+    setHiddenProjects(hiddenStore.getHiddenProjects());
+  };
+
+  const handleBuiltinProjectRestore = (domain) => {
+    hiddenStore.showBuiltinProject(domain);
+    setHiddenProjects(hiddenStore.getHiddenProjects());
   };
 
   return (
@@ -385,15 +450,38 @@ function ProjectsTab() {
       <div>
         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Built-in Domains</p>
         <div className="space-y-3">
-          {HARDCODED_PROJECTS.map(d => (
-            <div key={d.domain} className="bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-semibold text-slate-600 bg-slate-200 px-2 py-0.5 rounded-full">{d.domain}</span>
-                <span className="text-xs text-slate-400">{d.count} topics</span>
+          {HARDCODED_PROJECTS.map(d => {
+            const isHidden = hiddenProjects.includes(d.domain);
+            return (
+              <div key={d.domain} className={`flex items-start justify-between gap-4 rounded-2xl px-5 py-4 border ${isHidden ? 'bg-rose-50 border-rose-100 opacity-60' : 'bg-slate-50 border-slate-200'}`}>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="text-xs font-semibold text-slate-600 bg-slate-200 px-2 py-0.5 rounded-full">{d.domain}</span>
+                    <span className="text-xs text-slate-400">{d.count} topics</span>
+                    {isHidden && <span className="text-xs font-semibold text-rose-600 bg-rose-100 px-2 py-0.5 rounded-full">Hidden</span>}
+                  </div>
+                  <p className="text-slate-500 text-xs leading-relaxed">{d.sample}</p>
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <button onClick={() => handleBuiltinProjectEdit(d)}
+                    className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Add project to this domain">
+                    <Pencil size={15} />
+                  </button>
+                  {isHidden ? (
+                    <button onClick={() => handleBuiltinProjectRestore(d.domain)}
+                      className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors text-xs font-semibold" title="Restore">
+                      Restore
+                    </button>
+                  ) : (
+                    <button onClick={() => handleBuiltinProjectDelete(d.domain)}
+                      className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Hide from projects page">
+                      <Trash2 size={15} />
+                    </button>
+                  )}
+                </div>
               </div>
-              <p className="text-slate-500 text-xs leading-relaxed">{d.sample}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

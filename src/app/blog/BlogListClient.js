@@ -3,14 +3,18 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Clock, BookOpen, Sparkles } from 'lucide-react';
-import { blogStore } from '@/lib/adminStore';
+import { blogStore, hiddenStore } from '@/lib/adminStore';
 
 export default function BlogListClient({ hardcodedPosts }) {
   const [adminPosts, setAdminPosts] = useState([]);
+  const [hiddenBlogs, setHiddenBlogs] = useState([]);
 
   useEffect(() => {
     setAdminPosts(blogStore.getAll());
+    setHiddenBlogs(hiddenStore.getHiddenBlogs());
   }, []);
+
+  const visibleHardcoded = hardcodedPosts.filter(p => !hiddenBlogs.includes(p.slug));
 
   const categoryColor = (cat) => {
     const map = {
@@ -67,7 +71,7 @@ export default function BlogListClient({ hardcodedPosts }) {
           ))}
 
           {/* Hardcoded posts */}
-          {hardcodedPosts.map((post) => (
+          {visibleHardcoded.map((post) => (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
