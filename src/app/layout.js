@@ -1,12 +1,7 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
-import SiteHeader from '@/components/SiteHeader';
-import Footer from '@/components/Footer';
-import FloatCTA from '@/components/FloatCTA';
-import BackToTop from '@/components/BackToTop';
 import CursorGlow from '@/components/CursorGlow';
-import Breadcrumbs from '@/components/Breadcrumbs';
-import PageTransition from '@/components/PageTransition';
+import SiteShell from '@/components/SiteShell';
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
@@ -77,16 +72,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className={inter.className}>
         <CursorGlow />
-        <SiteHeader />
-        <Breadcrumbs />
-        <main style={{ paddingTop: 'var(--header-h, 4rem)' }} className="pb-20 md:pb-0">
-          <PageTransition>
-            {children}
-          </PageTransition>
-        </main>
-        <Footer />
-        <FloatCTA />
-        <BackToTop />
+        <SiteShell>{children}</SiteShell>
       </body>
     </html>
   );
