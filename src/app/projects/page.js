@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Cpu, Wifi, Brain, Bot, HeartPulse, Zap, Wrench, Code2,
-  MessageCircle, ArrowRight, ChevronRight,
+  MessageCircle, ArrowRight, ChevronRight, Sparkles,
 } from 'lucide-react';
+import { projectStore } from '@/lib/adminStore';
 
 const domains = [
   {
@@ -150,8 +151,17 @@ const colorMap = {
   indigo: { bg: 'bg-indigo-50', border: 'border-indigo-100', text: 'text-indigo-700', iconBg: 'bg-indigo-100', badge: 'bg-indigo-700', tab: 'bg-indigo-600 text-white', tabIdle: 'text-indigo-700 bg-indigo-50 border border-indigo-100' },
 };
 
+const difficultyColor = {
+  Easy:   'text-green-700 bg-green-50 border border-green-200',
+  Medium: 'text-amber-700 bg-amber-50 border border-amber-200',
+  Hard:   'text-rose-700 bg-rose-50 border border-rose-200',
+};
+
 export default function ProjectsPage() {
   const [active, setActive] = useState('All');
+  const [adminProjects, setAdminProjects] = useState([]);
+
+  useEffect(() => { setAdminProjects(projectStore.getAll()); }, []);
 
   const filtered = active === 'All' ? domains : domains.filter((d) => d.title === active);
 
@@ -167,6 +177,41 @@ export default function ProjectsPage() {
           </p>
         </div>
       </section>
+
+      {/* ── Admin-added projects ── */}
+      {adminProjects.length > 0 && (
+        <section className="py-10 bg-primary-50 border-b border-primary-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-2 mb-6">
+              <Sparkles size={18} className="text-primary-700" />
+              <h2 className="font-black text-slate-900 text-lg">New Project Topics</h2>
+              <span className="text-xs font-bold text-primary-700 bg-primary-100 px-2 py-0.5 rounded-full">{adminProjects.length} added</span>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {adminProjects.map((proj) => (
+                <div key={proj.id} className="bg-white rounded-2xl border border-primary-100 p-5">
+                  <div className="flex items-center gap-2 mb-3 flex-wrap">
+                    <span className="text-xs font-semibold text-primary-700 bg-primary-50 px-2 py-0.5 rounded-full border border-primary-100">{proj.domain}</span>
+                    {proj.difficulty && (
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${difficultyColor[proj.difficulty] || 'text-slate-600 bg-slate-100'}`}>{proj.difficulty}</span>
+                    )}
+                    {proj.duration && <span className="text-xs text-slate-400">{proj.duration}</span>}
+                  </div>
+                  <p className="font-bold text-slate-900 text-sm leading-snug mb-2">{proj.title}</p>
+                  {proj.description && <p className="text-slate-500 text-xs leading-relaxed mb-3">{proj.description}</p>}
+                  {proj.tech && (
+                    <div className="flex flex-wrap gap-1">
+                      {proj.tech.split(',').map(t => t.trim()).filter(Boolean).map(t => (
+                        <span key={t} className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{t}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── Filter grid ── */}
       <div className="bg-white border-b border-slate-100 shadow-sm">
