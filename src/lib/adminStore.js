@@ -20,11 +20,13 @@ export const adminAuth = {
 export const blogStore = {
   getAll: () => read(KEYS.blogs),
   add: (post) => write(KEYS.blogs, [{ ...post, id: Date.now().toString(), createdAt: new Date().toISOString() }, ...read(KEYS.blogs)]),
+  update: (post) => write(KEYS.blogs, read(KEYS.blogs).map(p => p.id === post.id ? { ...p, ...post } : p)),
   delete: (id) => write(KEYS.blogs, read(KEYS.blogs).filter(p => p.id !== id)),
 };
 
 export const projectStore = {
   getAll: () => read(KEYS.projects),
   add: (proj) => write(KEYS.projects, [{ ...proj, id: Date.now().toString(), createdAt: new Date().toISOString() }, ...read(KEYS.projects)]),
+  update: (proj) => write(KEYS.projects, read(KEYS.projects).map(p => p.id === proj.id ? { ...p, ...proj } : p)),
   delete: (id) => write(KEYS.projects, read(KEYS.projects).filter(p => p.id !== id)),
 };

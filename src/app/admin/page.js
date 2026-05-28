@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   Lock, LogOut, Plus, Trash2, BookOpen, FolderOpen,
-  Download, Eye, AlertTriangle, CheckCircle2, X,
+  Download, Eye, AlertTriangle, CheckCircle2, X, Pencil,
 } from 'lucide-react';
 import { adminAuth, blogStore, projectStore } from '@/lib/adminStore';
 
@@ -85,19 +85,28 @@ function LoginScreen({ onLogin }) {
 function BlogTab() {
   const [posts, setPosts] = useState([]);
   const [form, setForm] = useState(emptyBlog);
+  const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState('');
 
   useEffect(() => { setPosts(blogStore.getAll()); }, []);
 
-  const handleAdd = (e) => {
+  const openAdd = () => { setForm(emptyBlog); setEditingId(null); setShowForm(true); };
+  const openEdit = (post) => { setForm({ title: post.title, category: post.category, excerpt: post.excerpt, content: post.content, readTime: post.readTime }); setEditingId(post.id); setShowForm(true); };
+  const closeForm = () => { setShowForm(false); setEditingId(null); setForm(emptyBlog); };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    blogStore.add(form);
+    if (editingId) {
+      blogStore.update({ id: editingId, ...form });
+      setSaved('updated');
+    } else {
+      blogStore.add(form);
+      setSaved('added');
+    }
     setPosts(blogStore.getAll());
-    setForm(emptyBlog);
-    setShowForm(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    closeForm();
+    setTimeout(() => setSaved(''), 3000);
   };
 
   const handleDelete = (id) => {
@@ -113,23 +122,21 @@ function BlogTab() {
           <h2 className="text-xl font-black text-slate-900">Blog Posts</h2>
           <p className="text-slate-400 text-sm mt-0.5">{posts.length} admin-added post{posts.length !== 1 ? 's' : ''}</p>
         </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 bg-primary-700 hover:bg-primary-800 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors"
-        >
+        <button onClick={openAdd}
+          className="flex items-center gap-2 bg-primary-700 hover:bg-primary-800 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors">
           <Plus size={16} /> Add Blog Post
         </button>
       </div>
 
       {saved && (
         <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm font-medium px-4 py-3 rounded-xl mb-5">
-          <CheckCircle2 size={16} /> Blog post added successfully!
+          <CheckCircle2 size={16} /> Blog post {saved} successfully!
         </div>
       )}
 
       {showForm && (
-        <form onSubmit={handleAdd} className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-6 space-y-4">
-          <h3 className="font-bold text-slate-900 text-base mb-2">New Blog Post</h3>
+        <form onSubmit={handleSubmit} className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-6 space-y-4">
+          <h3 className="font-bold text-slate-900 text-base">{editingId ? 'Edit Blog Post' : 'New Blog Post'}</h3>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">Title *</label>
@@ -163,9 +170,9 @@ function BlogTab() {
           </div>
           <div className="flex gap-3 pt-1">
             <button type="submit" className="bg-primary-700 hover:bg-primary-800 text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
-              Save Post
+              {editingId ? 'Update Post' : 'Save Post'}
             </button>
-            <button type="button" onClick={() => setShowForm(false)} className="border border-slate-200 text-slate-600 hover:bg-slate-100 font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
+            <button type="button" onClick={closeForm} className="border border-slate-200 text-slate-600 hover:bg-slate-100 font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
               Cancel
             </button>
           </div>
@@ -186,14 +193,18 @@ function BlogTab() {
                 <p className="font-bold text-slate-900 text-sm leading-snug">{post.title}</p>
                 <p className="text-slate-500 text-xs mt-1 line-clamp-2">{post.excerpt}</p>
               </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex items-center gap-1 flex-shrink-0">
                 <a href={`/blog/view?id=${post.id}`} target="_blank" rel="noreferrer"
-                  className="p-2 text-slate-400 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors">
-                  <Eye size={16} />
+                  className="p-2 text-slate-400 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors" title="View">
+                  <Eye size={15} />
                 </a>
+                <button onClick={() => openEdit(post)}
+                  className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
+                  <Pencil size={15} />
+                </button>
                 <button onClick={() => handleDelete(post.id)}
-                  className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
-                  <Trash2 size={16} />
+                  className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Delete">
+                  <Trash2 size={15} />
                 </button>
               </div>
             </div>
@@ -201,7 +212,7 @@ function BlogTab() {
         </div>
       )}
 
-      {/* Hardcoded / built-in posts */}
+      {/* Built-in posts */}
       <div>
         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Built-in Articles</p>
         <div className="space-y-3">
@@ -216,8 +227,8 @@ function BlogTab() {
                 <p className="font-bold text-slate-700 text-sm leading-snug">{post.title}</p>
               </div>
               <a href={`/blog/${post.slug}`} target="_blank" rel="noreferrer"
-                className="p-2 text-slate-400 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors flex-shrink-0">
-                <Eye size={16} />
+                className="p-2 text-slate-400 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors flex-shrink-0" title="View">
+                <Eye size={15} />
               </a>
             </div>
           ))}
@@ -231,19 +242,30 @@ function BlogTab() {
 function ProjectsTab() {
   const [projects, setProjects] = useState([]);
   const [form, setForm] = useState(emptyProject);
+  const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState('');
 
   useEffect(() => { setProjects(projectStore.getAll()); }, []);
 
-  const handleAdd = (e) => {
+  const difficultyColor = { Easy: 'text-green-700 bg-green-50', Medium: 'text-amber-700 bg-amber-50', Hard: 'text-rose-700 bg-rose-50' };
+
+  const openAdd = () => { setForm(emptyProject); setEditingId(null); setShowForm(true); };
+  const openEdit = (proj) => { setForm({ title: proj.title, domain: proj.domain, description: proj.description, tech: proj.tech, difficulty: proj.difficulty, duration: proj.duration }); setEditingId(proj.id); setShowForm(true); };
+  const closeForm = () => { setShowForm(false); setEditingId(null); setForm(emptyProject); };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    projectStore.add(form);
+    if (editingId) {
+      projectStore.update({ id: editingId, ...form });
+      setSaved('updated');
+    } else {
+      projectStore.add(form);
+      setSaved('added');
+    }
     setProjects(projectStore.getAll());
-    setForm(emptyProject);
-    setShowForm(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    closeForm();
+    setTimeout(() => setSaved(''), 3000);
   };
 
   const handleDelete = (id) => {
@@ -252,8 +274,6 @@ function ProjectsTab() {
     setProjects(projectStore.getAll());
   };
 
-  const difficultyColor = { Easy: 'text-green-700 bg-green-50', Medium: 'text-amber-700 bg-amber-50', Hard: 'text-rose-700 bg-rose-50' };
-
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -261,23 +281,21 @@ function ProjectsTab() {
           <h2 className="text-xl font-black text-slate-900">Projects</h2>
           <p className="text-slate-400 text-sm mt-0.5">{projects.length} admin-added project{projects.length !== 1 ? 's' : ''}</p>
         </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 bg-primary-700 hover:bg-primary-800 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors"
-        >
+        <button onClick={openAdd}
+          className="flex items-center gap-2 bg-primary-700 hover:bg-primary-800 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors">
           <Plus size={16} /> Add Project
         </button>
       </div>
 
       {saved && (
         <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm font-medium px-4 py-3 rounded-xl mb-5">
-          <CheckCircle2 size={16} /> Project added successfully!
+          <CheckCircle2 size={16} /> Project {saved} successfully!
         </div>
       )}
 
       {showForm && (
-        <form onSubmit={handleAdd} className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-6 space-y-4">
-          <h3 className="font-bold text-slate-900 text-base mb-2">New Project</h3>
+        <form onSubmit={handleSubmit} className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-6 space-y-4">
+          <h3 className="font-bold text-slate-900 text-base">{editingId ? 'Edit Project' : 'New Project'}</h3>
           <div>
             <label className="block text-xs font-semibold text-slate-600 mb-1.5">Project Title *</label>
             <input required value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
@@ -317,9 +335,9 @@ function ProjectsTab() {
           </div>
           <div className="flex gap-3 pt-1">
             <button type="submit" className="bg-primary-700 hover:bg-primary-800 text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
-              Save Project
+              {editingId ? 'Update Project' : 'Save Project'}
             </button>
-            <button type="button" onClick={() => setShowForm(false)} className="border border-slate-200 text-slate-600 hover:bg-slate-100 font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
+            <button type="button" onClick={closeForm} className="border border-slate-200 text-slate-600 hover:bg-slate-100 font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
               Cancel
             </button>
           </div>
@@ -348,16 +366,22 @@ function ProjectsTab() {
                   </div>
                 )}
               </div>
-              <button onClick={() => handleDelete(proj.id)}
-                className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors flex-shrink-0">
-                <Trash2 size={16} />
-              </button>
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <button onClick={() => openEdit(proj)}
+                  className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
+                  <Pencil size={15} />
+                </button>
+                <button onClick={() => handleDelete(proj.id)}
+                  className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Delete">
+                  <Trash2 size={15} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Hardcoded / built-in project domains */}
+      {/* Built-in domains */}
       <div>
         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Built-in Domains</p>
         <div className="space-y-3">
