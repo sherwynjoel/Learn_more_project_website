@@ -89,34 +89,40 @@ function BlogTab() {
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [saved, setSaved] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const refresh = async () => { setPosts(await blogStore.getAll()); };
 
   useEffect(() => {
-    setPosts(blogStore.getAll());
+    refresh();
     setHiddenBlogs(hiddenStore.getHiddenBlogs());
   }, []);
 
   const openAdd = () => { setForm(emptyBlog); setEditingId(null); setShowForm(true); };
-  const openEdit = (post) => { setForm({ title: post.title, category: post.category, excerpt: post.excerpt, content: post.content, readTime: post.readTime }); setEditingId(post.id); setShowForm(true); };
+  const openEdit = (post) => { setForm({ title: post.title, category: post.category, excerpt: post.excerpt || '', content: post.content || '', readTime: post.read_time || post.readTime || '5 min read' }); setEditingId(post.id); setShowForm(true); };
   const closeForm = () => { setShowForm(false); setEditingId(null); setForm(emptyBlog); };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    const payload = { title: form.title, category: form.category, excerpt: form.excerpt, content: form.content, read_time: form.readTime };
     if (editingId) {
-      blogStore.update({ id: editingId, ...form });
+      await blogStore.update({ id: editingId, ...payload });
       setSaved('updated');
     } else {
-      blogStore.add(form);
+      await blogStore.add(payload);
       setSaved('added');
     }
-    setPosts(blogStore.getAll());
+    await refresh();
+    setLoading(false);
     closeForm();
     setTimeout(() => setSaved(''), 3000);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!confirm('Delete this blog post?')) return;
-    blogStore.delete(id);
-    setPosts(blogStore.getAll());
+    await blogStore.delete(id);
+    await refresh();
   };
 
   const handleBuiltinEdit = (post) => {
@@ -192,8 +198,8 @@ function BlogTab() {
               placeholder="5 min read" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200" />
           </div>
           <div className="flex gap-3 pt-1">
-            <button type="submit" className="bg-primary-700 hover:bg-primary-800 text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
-              {editingId ? 'Update Post' : 'Save Post'}
+            <button type="submit" disabled={loading} className="bg-primary-700 hover:bg-primary-800 disabled:opacity-60 text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
+              {loading ? 'Saving...' : editingId ? 'Update Post' : 'Save Post'}
             </button>
             <button type="button" onClick={closeForm} className="border border-slate-200 text-slate-600 hover:bg-slate-100 font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
               Cancel
@@ -292,36 +298,41 @@ function ProjectsTab() {
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [saved, setSaved] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const refresh = async () => { setProjects(await projectStore.getAll()); };
 
   useEffect(() => {
-    setProjects(projectStore.getAll());
+    refresh();
     setHiddenProjects(hiddenStore.getHiddenProjects());
   }, []);
 
   const difficultyColor = { Easy: 'text-green-700 bg-green-50', Medium: 'text-amber-700 bg-amber-50', Hard: 'text-rose-700 bg-rose-50' };
 
   const openAdd = () => { setForm(emptyProject); setEditingId(null); setShowForm(true); };
-  const openEdit = (proj) => { setForm({ title: proj.title, domain: proj.domain, description: proj.description, tech: proj.tech, difficulty: proj.difficulty, duration: proj.duration }); setEditingId(proj.id); setShowForm(true); };
+  const openEdit = (proj) => { setForm({ title: proj.title, domain: proj.domain, description: proj.description || '', tech: proj.tech || '', difficulty: proj.difficulty || 'Medium', duration: proj.duration || '25–30 days' }); setEditingId(proj.id); setShowForm(true); };
   const closeForm = () => { setShowForm(false); setEditingId(null); setForm(emptyProject); };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (editingId) {
-      projectStore.update({ id: editingId, ...form });
+      await projectStore.update({ id: editingId, ...form });
       setSaved('updated');
     } else {
-      projectStore.add(form);
+      await projectStore.add(form);
       setSaved('added');
     }
-    setProjects(projectStore.getAll());
+    await refresh();
+    setLoading(false);
     closeForm();
     setTimeout(() => setSaved(''), 3000);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!confirm('Delete this project?')) return;
-    projectStore.delete(id);
-    setProjects(projectStore.getAll());
+    await projectStore.delete(id);
+    await refresh();
   };
 
   const handleBuiltinProjectEdit = (d) => {
@@ -403,8 +414,8 @@ function ProjectsTab() {
               placeholder="Arduino, ESP32, Python, MQTT" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200" />
           </div>
           <div className="flex gap-3 pt-1">
-            <button type="submit" className="bg-primary-700 hover:bg-primary-800 text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
-              {editingId ? 'Update Project' : 'Save Project'}
+            <button type="submit" disabled={loading} className="bg-primary-700 hover:bg-primary-800 disabled:opacity-60 text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
+              {loading ? 'Saving...' : editingId ? 'Update Project' : 'Save Project'}
             </button>
             <button type="button" onClick={closeForm} className="border border-slate-200 text-slate-600 hover:bg-slate-100 font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
               Cancel

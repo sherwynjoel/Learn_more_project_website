@@ -1,5 +1,6 @@
-import { ArrowRight, Clock, BookOpen, MessageCircle } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import BlogListClient from './BlogListClient';
+import { supabase } from '@/lib/supabase';
 
 export const metadata = {
   title: 'Blog & Resources | LearnMore Projects — Final Year Project Guides',
@@ -45,7 +46,12 @@ const topics = [
   'Hardware Tutorials', 'Domain Comparisons', 'Placement Tips',
 ];
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  let adminPosts = [];
+  try {
+    const { data } = await supabase.from('blogs').select();
+    adminPosts = data || [];
+  } catch {}
   return (
     <>
       {/* Header */}
@@ -75,8 +81,8 @@ export default function BlogPage() {
         </div>
       </section>
 
-      {/* Posts — merges hardcoded + admin-added */}
-      <BlogListClient hardcodedPosts={hardcodedPosts} />
+      {/* Posts — merges hardcoded + admin-added from Supabase */}
+      <BlogListClient hardcodedPosts={hardcodedPosts} initialAdminPosts={adminPosts} />
 
       {/* CTA */}
       <section className="py-16 bg-primary-700">

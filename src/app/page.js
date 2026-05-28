@@ -3,7 +3,7 @@ import {
   ArrowRight, MessageCircle, Phone, CheckCircle2,
   Cpu, Wifi, Brain, Bot, HeartPulse, Zap, Wrench, Code2,
   Award, Users, BookOpen, Shield, Star, ChevronRight, Quote,
-  TrendingUp, FlaskConical, FileCheck2, Microscope, Play, Download,
+  TrendingUp, FlaskConical, FileCheck2, Microscope, Download,
 } from 'lucide-react';
 import Reveal from '@/components/Reveal';
 import CountUp from '@/components/CountUp';
@@ -571,53 +571,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── VIDEO SECTION ─── */}
-      <section className="py-14 md:py-20 bg-slate-950 relative overflow-hidden">
-        <div className="absolute inset-0 hero-grid opacity-10 pointer-events-none" />
-        <div className="absolute -top-32 right-0 w-80 h-80 bg-primary-900/20 rounded-full blur-3xl" />
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Reveal from="up" className="text-center mb-10">
-            <span className="inline-block bg-white/10 text-primary-300 font-semibold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full border border-white/10 mb-4">
-              See How We Work
-            </span>
-            <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">A Look Inside Our R&D Lab</h2>
-            <p className="mt-4 text-slate-400 text-base max-w-xl mx-auto">
-              Watch how we take a final year project from IEEE paper to working prototype — in 30 days.
-            </p>
-          </Reveal>
-          <Reveal from="up" delay={80}>
-            <div className="relative aspect-video bg-slate-800 rounded-3xl overflow-hidden border border-slate-700 shadow-2xl shadow-black/60">
-              {/* Video placeholder — replace src with actual YouTube embed URL */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="w-20 h-20 bg-primary-600 rounded-full flex items-center justify-center mb-5 shadow-xl shadow-primary-900/60 cursor-pointer hover:bg-primary-500 transition-colors group">
-                  <Play size={32} className="text-white ml-1 group-hover:scale-110 transition-transform" />
-                </div>
-                <p className="text-white font-bold text-lg mb-2">Project Showcase Video</p>
-                <p className="text-slate-400 text-sm">Coming soon — watch our team build a project from scratch</p>
-              </div>
-              {/* Grid overlay for visual interest */}
-              <div className="absolute inset-0 hero-grid opacity-20" />
-            </div>
-          </Reveal>
-          <Reveal from="up" delay={120} className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="https://wa.me/917550191838?text=Hi%2C%20I%20want%20to%20see%20project%20demos%20before%20I%20decide"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm px-6 py-3 rounded-xl transition-colors min-h-[44px]"
-            >
-              <MessageCircle size={16} />
-              Request a Live Demo on WhatsApp
-            </a>
-            <Link
-              href="/portfolio"
-              className="inline-flex items-center justify-center gap-2 border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 font-medium text-sm px-6 py-3 rounded-xl transition-colors min-h-[44px]"
-            >
-              View Project Portfolio <ArrowRight size={15} />
-            </Link>
-          </Reveal>
-        </div>
-      </section>
 
       {/* ─── TESTIMONIALS ─── */}
       <section className="py-14 md:py-20 relative overflow-hidden" style={{ background: 'linear-gradient(135deg,#0f172a 0%,#1e1b4b 55%,#172554 100%)' }}>

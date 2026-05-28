@@ -1,40 +1,28 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Clock, BookOpen, Sparkles } from 'lucide-react';
-import { blogStore, hiddenStore } from '@/lib/adminStore';
 
-export default function BlogListClient({ hardcodedPosts }) {
-  const [adminPosts, setAdminPosts] = useState([]);
-  const [hiddenBlogs, setHiddenBlogs] = useState([]);
-
-  useEffect(() => {
-    setAdminPosts(blogStore.getAll());
-    setHiddenBlogs(hiddenStore.getHiddenBlogs());
-  }, []);
-
-  const visibleHardcoded = hardcodedPosts.filter(p => !hiddenBlogs.includes(p.slug));
-
-  const categoryColor = (cat) => {
-    const map = {
-      'Project Ideas': 'bg-primary-100 text-primary-700',
-      'Viva Prep': 'bg-green-100 text-green-700',
-      'Comparison': 'bg-orange-100 text-orange-700',
-      'Career': 'bg-blue-100 text-blue-700',
-      'IoT': 'bg-teal-100 text-teal-700',
-      'AI / ML': 'bg-purple-100 text-purple-700',
-      'Embedded': 'bg-indigo-100 text-indigo-700',
-    };
-    return map[cat] || 'bg-slate-100 text-slate-700';
+const categoryColor = (cat) => {
+  const map = {
+    'Project Ideas': 'bg-primary-100 text-primary-700',
+    'Viva Prep': 'bg-green-100 text-green-700',
+    'Comparison': 'bg-orange-100 text-orange-700',
+    'Career': 'bg-blue-100 text-blue-700',
+    'IoT': 'bg-teal-100 text-teal-700',
+    'AI / ML': 'bg-purple-100 text-purple-700',
+    'Embedded': 'bg-indigo-100 text-indigo-700',
   };
+  return map[cat] || 'bg-slate-100 text-slate-700';
+};
 
+export default function BlogListClient({ hardcodedPosts, initialAdminPosts = [] }) {
   return (
     <section className="py-16 bg-slate-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="space-y-6">
-          {/* Admin-added posts first */}
-          {adminPosts.map((post) => (
+          {/* Supabase / admin-added posts */}
+          {initialAdminPosts.map((post) => (
             <a
               key={post.id}
               href={`/blog/view?id=${post.id}`}
@@ -52,16 +40,16 @@ export default function BlogListClient({ hardcodedPosts }) {
                     <span className="text-xs font-semibold text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full flex items-center gap-1">
                       <Sparkles size={10} /> New
                     </span>
-                    {post.readTime && (
+                    {(post.read_time || post.readTime) && (
                       <span className="text-xs text-slate-400 flex items-center gap-1">
-                        <Clock size={11} /> {post.readTime}
+                        <Clock size={11} /> {post.read_time || post.readTime}
                       </span>
                     )}
                   </div>
                   <h2 className="font-black text-slate-900 text-lg leading-snug mb-2 group-hover:text-primary-700 transition-colors">
                     {post.title}
                   </h2>
-                  <p className="text-slate-500 text-sm leading-relaxed mb-4">{post.excerpt}</p>
+                  {post.excerpt && <p className="text-slate-500 text-sm leading-relaxed mb-4">{post.excerpt}</p>}
                   <span className="inline-flex items-center gap-1.5 text-primary-700 font-semibold text-sm group-hover:gap-2.5 transition-all">
                     Read article <ArrowRight size={14} />
                   </span>
@@ -71,7 +59,7 @@ export default function BlogListClient({ hardcodedPosts }) {
           ))}
 
           {/* Hardcoded posts */}
-          {visibleHardcoded.map((post) => (
+          {hardcodedPosts.map((post) => (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
