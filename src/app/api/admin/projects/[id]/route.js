@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import { supabaseService } from '@/lib/supabase';
+import { readJsonFile, writeJsonFile } from '@/lib/githubStore';
 
 const PASS = process.env.ADMIN_PASSWORD || 'LearnMore@2025';
+const FILE = 'data/projects.json';
 
 function auth(req) {
   return req.headers.get('Authorization') === `Bearer ${PASS}`;
@@ -10,14 +11,16 @@ function auth(req) {
 export async function PUT(req, { params }) {
   if (!auth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const body = await req.json();
-  const { data, error } = await supabaseService().from('projects').update(params.id, body);
-  if (error) return NextResponse.json({ error }, { status: 500 });
-  return NextResponse.json(data);
+  const { data, sha } = await readJsonFile(FILE);
+  const updated = data.map(p => p.id === params.id ? { ...p, ...body } : p);
+  await writeJsonFile(FILE, updated, sha, `Update project: ${params.id}`);
+  return NextResponse.json({ success: true });
 }
 
 export async function DELETE(req, { params }) {
   if (!auth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const { error } = await supabaseService().from('projects').delete(params.id);
-  if (error) return NextResponse.json({ error }, { status: 500 });
+  const { data, sha } = await readJsonFile(FILE);
+  const filtered = data.filter(p => p.id !== params.id);
+  await writeJsonFile(FILE, filtered, sha, `Delete project: ${params.id}`);
   return NextResponse.json({ success: true });
 }

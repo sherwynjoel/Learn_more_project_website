@@ -1,6 +1,5 @@
 import { MessageCircle } from 'lucide-react';
 import BlogListClient from './BlogListClient';
-import { supabase } from '@/lib/supabase';
 
 export const metadata = {
   title: 'Blog & Resources | LearnMore Projects — Final Year Project Guides',
@@ -46,11 +45,16 @@ const topics = [
   'Hardware Tutorials', 'Domain Comparisons', 'Placement Tips',
 ];
 
+const REPO = 'sherwynjoel/Learn_more_project_website';
+
 export default async function BlogPage() {
   let adminPosts = [];
   try {
-    const { data } = await supabase.from('blogs').select();
-    adminPosts = data || [];
+    const res = await fetch(
+      `https://raw.githubusercontent.com/${REPO}/main/data/blogs.json`,
+      { cache: 'no-store' }
+    );
+    if (res.ok) adminPosts = await res.json();
   } catch {}
   return (
     <>

@@ -1,22 +1,23 @@
 import { NextResponse } from 'next/server';
-import { supabaseService } from '@/lib/supabase';
+import { readJsonFile, writeJsonFile } from '@/lib/githubStore';
 
 const PASS = process.env.ADMIN_PASSWORD || 'LearnMore@2025';
+const FILE = 'data/blogs.json';
 
 function auth(req) {
   return req.headers.get('Authorization') === `Bearer ${PASS}`;
 }
 
 export async function GET() {
-  const { data, error } = await supabaseService().from('blogs').select();
-  if (error) return NextResponse.json({ error }, { status: 500 });
+  const { data } = await readJsonFile(FILE);
   return NextResponse.json(data);
 }
 
 export async function POST(req) {
   if (!auth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const body = await req.json();
-  const { data, error } = await supabaseService().from('blogs').insert(body);
-  if (error) return NextResponse.json({ error }, { status: 500 });
-  return NextResponse.json(data, { status: 201 });
+  const { data, sha } = await readJsonFile(FILE);
+  const newPost = { ...body, id: Date.now().toString(), createdAt: new Date().toISOString() };
+  await writeJsonFile(FILE, [newPost, ...data], sha, `Add blog: ${body.title}`);
+  return NextResponse.json(newPost, { status: 201 });
 }

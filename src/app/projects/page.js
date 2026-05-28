@@ -161,7 +161,12 @@ export default function ProjectsPage() {
   const [active, setActive] = useState('All');
   const [adminProjects, setAdminProjects] = useState([]);
 
-  useEffect(() => { setAdminProjects(projectStore.getAll()); }, []);
+  useEffect(() => {
+    fetch('https://raw.githubusercontent.com/sherwynjoel/Learn_more_project_website/main/data/projects.json', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => setAdminProjects(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, []);
 
   const filtered = active === 'All' ? domains : domains.filter((d) => d.title === active);
 
