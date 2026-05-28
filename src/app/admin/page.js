@@ -9,6 +9,23 @@ import {
 } from 'lucide-react';
 import { adminAuth, blogStore, projectStore } from '@/lib/adminStore';
 
+const HARDCODED_BLOGS = [
+  { slug: 'top-final-year-projects-ece-2025', category: 'Project Ideas', title: 'Top 20 Final Year Projects for ECE Students in 2025', readTime: '8 min read', date: 'May 2025' },
+  { slug: 'how-to-clear-final-year-viva', category: 'Viva Prep', title: 'How to Clear Your Final Year Viva Without Panicking', readTime: '6 min read', date: 'April 2025' },
+  { slug: 'embedded-vs-iot-final-year-project', category: 'Comparison', title: 'Embedded Systems vs IoT: Which Domain Should You Pick?', readTime: '5 min read', date: 'March 2025' },
+];
+
+const HARDCODED_PROJECTS = [
+  { domain: 'Embedded Systems', count: '500+', sample: 'Smart Home Automation, RFID Attendance, Wearable Fall Detection, CAN Bus Vehicle Diagnostics...' },
+  { domain: 'IoT Projects', count: '400+', sample: 'Smart Precision Agriculture, Industrial Machine Monitoring, GPS Vehicle Tracking...' },
+  { domain: 'AI / Machine Learning', count: '350+', sample: 'Edge AI Defect Detection, Driver Drowsiness Detection, Crop Disease Prediction...' },
+  { domain: 'Bio-Medical', count: '250+', sample: 'ECG Monitoring, Portable SpO2 Monitor, Seizure Detection, Smart Pill Dispenser...' },
+  { domain: 'Power Electronics', count: '200+', sample: 'Solar MPPT Controller, Grid-Tied Inverter, EV Battery BMS...' },
+  { domain: 'Robotics', count: '200+', sample: 'Autonomous Navigation, Swarm Robotics, Robotic Arm, Fire-Fighting Robot...' },
+  { domain: 'Software Development', count: '300+', sample: 'AI Chatbot, Blockchain Land Registry, Face Recognition Attendance...' },
+  { domain: 'Mechanical', count: '150+', sample: 'Wearable Exoskeleton, Hydroponic System, Active Suspension...' },
+];
+
 const BLOG_CATEGORIES = ['Project Ideas', 'Viva Prep', 'Comparison', 'Career', 'IoT', 'AI / ML', 'Embedded'];
 const DOMAINS = ['Embedded Systems', 'IoT Projects', 'AI / Machine Learning', 'Bio-Medical', 'Power Electronics', 'Robotics', 'Software Development', 'Mechanical'];
 const DIFFICULTIES = ['Easy', 'Medium', 'Hard'];
@@ -155,19 +172,15 @@ function BlogTab() {
         </form>
       )}
 
-      {posts.length === 0 ? (
-        <div className="text-center py-16 text-slate-400">
-          <BookOpen size={40} className="mx-auto mb-3 opacity-30" />
-          <p className="font-medium">No blog posts added yet.</p>
-          <p className="text-sm mt-1">Click "Add Blog Post" to get started.</p>
-        </div>
-      ) : (
-        <div className="space-y-3">
+      {/* Admin-added posts */}
+      {posts.length > 0 && (
+        <div className="space-y-3 mb-8">
           {posts.map(post => (
-            <div key={post.id} className="flex items-start justify-between gap-4 bg-white border border-slate-100 rounded-2xl px-5 py-4">
+            <div key={post.id} className="flex items-start justify-between gap-4 bg-white border border-primary-100 rounded-2xl px-5 py-4">
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span className="text-xs font-semibold text-primary-700 bg-primary-50 px-2 py-0.5 rounded-full">{post.category}</span>
+                  <span className="text-xs font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">Admin Added</span>
                   <span className="text-xs text-slate-400">{post.readTime}</span>
                 </div>
                 <p className="font-bold text-slate-900 text-sm leading-snug">{post.title}</p>
@@ -187,6 +200,29 @@ function BlogTab() {
           ))}
         </div>
       )}
+
+      {/* Hardcoded / built-in posts */}
+      <div>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Built-in Articles</p>
+        <div className="space-y-3">
+          {HARDCODED_BLOGS.map(post => (
+            <div key={post.slug} className="flex items-start justify-between gap-4 bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <span className="text-xs font-semibold text-slate-600 bg-slate-200 px-2 py-0.5 rounded-full">{post.category}</span>
+                  <span className="text-xs text-slate-400">{post.readTime}</span>
+                  <span className="text-xs text-slate-400">{post.date}</span>
+                </div>
+                <p className="font-bold text-slate-700 text-sm leading-snug">{post.title}</p>
+              </div>
+              <a href={`/blog/${post.slug}`} target="_blank" rel="noreferrer"
+                className="p-2 text-slate-400 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors flex-shrink-0">
+                <Eye size={16} />
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -290,20 +326,16 @@ function ProjectsTab() {
         </form>
       )}
 
-      {projects.length === 0 ? (
-        <div className="text-center py-16 text-slate-400">
-          <FolderOpen size={40} className="mx-auto mb-3 opacity-30" />
-          <p className="font-medium">No projects added yet.</p>
-          <p className="text-sm mt-1">Click "Add Project" to get started.</p>
-        </div>
-      ) : (
-        <div className="space-y-3">
+      {/* Admin-added projects */}
+      {projects.length > 0 && (
+        <div className="space-y-3 mb-8">
           {projects.map(proj => (
-            <div key={proj.id} className="flex items-start justify-between gap-4 bg-white border border-slate-100 rounded-2xl px-5 py-4">
+            <div key={proj.id} className="flex items-start justify-between gap-4 bg-white border border-primary-100 rounded-2xl px-5 py-4">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span className="text-xs font-semibold text-primary-700 bg-primary-50 px-2 py-0.5 rounded-full">{proj.domain}</span>
                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${difficultyColor[proj.difficulty] || 'text-slate-600 bg-slate-100'}`}>{proj.difficulty}</span>
+                  <span className="text-xs font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">Admin Added</span>
                   {proj.duration && <span className="text-xs text-slate-400">{proj.duration}</span>}
                 </div>
                 <p className="font-bold text-slate-900 text-sm leading-snug">{proj.title}</p>
@@ -324,6 +356,22 @@ function ProjectsTab() {
           ))}
         </div>
       )}
+
+      {/* Hardcoded / built-in project domains */}
+      <div>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Built-in Domains</p>
+        <div className="space-y-3">
+          {HARDCODED_PROJECTS.map(d => (
+            <div key={d.domain} className="bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xs font-semibold text-slate-600 bg-slate-200 px-2 py-0.5 rounded-full">{d.domain}</span>
+                <span className="text-xs text-slate-400">{d.count} topics</span>
+              </div>
+              <p className="text-slate-500 text-xs leading-relaxed">{d.sample}</p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
