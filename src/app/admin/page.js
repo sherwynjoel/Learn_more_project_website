@@ -166,10 +166,12 @@ function BlogTab() {
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">Category *</label>
-              <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-200">
-                {BLOG_CATEGORIES.map(c => <option key={c}>{c}</option>)}
-              </select>
+              <input required list="blog-categories" value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                placeholder="Type or pick a category"
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200" />
+              <datalist id="blog-categories">
+                {BLOG_CATEGORIES.map(c => <option key={c} value={c} />)}
+              </datalist>
             </div>
           </div>
           <div>
@@ -369,10 +371,12 @@ function ProjectsTab() {
           <div className="grid sm:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">Domain *</label>
-              <select value={form.domain} onChange={e => setForm(f => ({ ...f, domain: e.target.value }))}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-200">
-                {DOMAINS.map(d => <option key={d}>{d}</option>)}
-              </select>
+              <input required list="project-domains" value={form.domain} onChange={e => setForm(f => ({ ...f, domain: e.target.value }))}
+                placeholder="Type or pick a domain"
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200" />
+              <datalist id="project-domains">
+                {DOMAINS.map(d => <option key={d} value={d} />)}
+              </datalist>
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">Difficulty</label>
