@@ -10,9 +10,8 @@ import PageTransition from './PageTransition';
 
 export default function SiteShell({ children }) {
   const pathname = usePathname();
-  const isAdmin = pathname.startsWith('/admin');
 
-  if (isAdmin) {
+  if (pathname.startsWith('/admin')) {
     return <>{children}</>;
   }
 

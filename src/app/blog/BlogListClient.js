@@ -1,96 +1,96 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Clock, BookOpen, Sparkles } from 'lucide-react';
+import { Clock, ArrowRight, Sparkles } from 'lucide-react';
 
-const categoryColor = (cat) => {
-  const map = {
-    'Project Ideas': 'bg-primary-100 text-primary-700',
-    'Viva Prep': 'bg-green-100 text-green-700',
-    'Comparison': 'bg-orange-100 text-orange-700',
-    'Career': 'bg-blue-100 text-blue-700',
-    'IoT': 'bg-teal-100 text-teal-700',
-    'AI / ML': 'bg-purple-100 text-purple-700',
-    'Embedded': 'bg-indigo-100 text-indigo-700',
-  };
-  return map[cat] || 'bg-slate-100 text-slate-700';
-};
+export default function BlogListClient({ hardcodedPosts }) {
+  const [adminPosts, setAdminPosts] = useState([]);
+  const [builtinOverrides, setBuiltinOverrides] = useState([]);
 
-export default function BlogListClient({ hardcodedPosts, initialAdminPosts = [] }) {
+  useEffect(() => {
+    const base = process.env.NODE_ENV === 'development' ? '/api/content' : '/api.php';
+    fetch(`${base}?type=blogs`).then(r => r.ok ? r.json() : []).then(d => setAdminPosts(Array.isArray(d) ? d : [])).catch(() => {});
+    fetch(`${base}?type=builtinblogs`).then(r => r.ok ? r.json() : []).then(d => setBuiltinOverrides(Array.isArray(d) ? d : [])).catch(() => {});
+  }, []);
+
+  const overrideMap = Object.fromEntries(builtinOverrides.map(o => [o.id, o]));
+
+  const effectiveBuiltin = hardcodedPosts
+    .filter(p => !overrideMap[p.slug]?.hidden)
+    .map(p => {
+      const ov = overrideMap[p.slug];
+      if (!ov) return p;
+      return {
+        ...p,
+        title:    ov.title    || p.title,
+        category: ov.category || p.category,
+        readTime: ov.readTime || p.readTime,
+        date:     ov.date     || p.date,
+        excerpt:  ov.excerpt  || p.excerpt,
+      };
+    });
+
   return (
-    <section className="py-16 bg-slate-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="space-y-6">
-          {/* Supabase / admin-added posts */}
-          {initialAdminPosts.map((post) => (
-            <a
-              key={post.id}
-              href={`/blog/view?id=${post.id}`}
-              className="group block bg-white rounded-2xl border border-primary-100 p-6 sm:p-8 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
-            >
-              <div className="flex items-start gap-4 sm:gap-6">
-                <div className="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                  <BookOpen size={20} className="text-primary-700" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className={`text-xs font-bold px-3 py-1 rounded-full ${categoryColor(post.category)}`}>
-                      {post.category}
-                    </span>
-                    <span className="text-xs font-semibold text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full flex items-center gap-1">
-                      <Sparkles size={10} /> New
-                    </span>
-                    {(post.read_time || post.readTime) && (
-                      <span className="text-xs text-slate-400 flex items-center gap-1">
-                        <Clock size={11} /> {post.read_time || post.readTime}
-                      </span>
+    <section className="py-14 bg-slate-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Admin-added posts */}
+        {adminPosts.length > 0 && (
+          <div className="mb-10">
+            <div className="flex items-center gap-2 mb-5">
+              <Sparkles size={16} className="text-primary-700" />
+              <h2 className="font-black text-slate-900 text-base">Latest Articles</h2>
+              <span className="text-xs font-bold text-primary-700 bg-primary-100 px-2 py-0.5 rounded-full">New</span>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {adminPosts.map(post => (
+                <article key={post.id} className="bg-white rounded-3xl border border-primary-100 p-6 flex flex-col hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs font-bold px-3 py-1 rounded-full bg-primary-100 text-primary-700">{post.category}</span>
+                    {post.readTime && <span className="flex items-center gap-1 text-slate-400 text-xs"><Clock size={11} />{post.readTime}</span>}
+                  </div>
+                  <h2 className="font-black text-slate-900 text-base leading-snug mb-3 flex-1">{post.title}</h2>
+                  {post.excerpt && <p className="text-slate-500 text-sm leading-relaxed mb-5">{post.excerpt}</p>}
+                  <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100">
+                    <span className="text-slate-400 text-xs">{new Date(post.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                    {post.content && (
+                      <Link href={`/blog/view?id=${post.id}`} className="inline-flex items-center gap-1.5 text-primary-700 font-semibold text-xs hover:gap-2.5 transition-all">
+                        Read <ArrowRight size={12} />
+                      </Link>
                     )}
                   </div>
-                  <h2 className="font-black text-slate-900 text-lg leading-snug mb-2 group-hover:text-primary-700 transition-colors">
-                    {post.title}
-                  </h2>
-                  {post.excerpt && <p className="text-slate-500 text-sm leading-relaxed mb-4">{post.excerpt}</p>}
-                  <span className="inline-flex items-center gap-1.5 text-primary-700 font-semibold text-sm group-hover:gap-2.5 transition-all">
-                    Read article <ArrowRight size={14} />
-                  </span>
-                </div>
-              </div>
-            </a>
-          ))}
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
 
-          {/* Hardcoded posts */}
-          {hardcodedPosts.map((post) => (
-            <Link
-              key={post.slug}
-              href={`/blog/${post.slug}`}
-              className="group block bg-white rounded-2xl border border-slate-100 p-6 sm:p-8 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
-            >
-              <div className="flex items-start gap-4 sm:gap-6">
-                <div className="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                  <BookOpen size={20} className="text-primary-700" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className={`text-xs font-bold px-3 py-1 rounded-full ${post.categoryColor}`}>
-                      {post.category}
-                    </span>
-                    <span className="text-xs text-slate-400 flex items-center gap-1">
-                      <Clock size={11} /> {post.readTime}
-                    </span>
-                    <span className="text-xs text-slate-400">{post.date}</span>
+        {/* Built-in posts (with overrides applied) */}
+        {effectiveBuiltin.length > 0 && (
+          <div className={adminPosts.length > 0 ? 'border-t border-slate-200 pt-10' : ''}>
+            {adminPosts.length > 0 && <h2 className="font-black text-slate-900 text-base mb-5">More Articles</h2>}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {effectiveBuiltin.map(post => (
+                <article key={post.slug} className="bg-white rounded-3xl border border-slate-100 p-6 flex flex-col hover:shadow-lg hover:shadow-slate-200/60 transition-all duration-300 hover:-translate-y-0.5">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className={`text-xs font-bold px-3 py-1 rounded-full ${post.categoryColor}`}>{post.category}</span>
+                    <span className="flex items-center gap-1 text-slate-400 text-xs"><Clock size={11} />{post.readTime}</span>
                   </div>
-                  <h2 className="font-black text-slate-900 text-lg leading-snug mb-2 group-hover:text-primary-700 transition-colors">
-                    {post.title}
-                  </h2>
-                  <p className="text-slate-500 text-sm leading-relaxed mb-4">{post.excerpt}</p>
-                  <span className="inline-flex items-center gap-1.5 text-primary-700 font-semibold text-sm group-hover:gap-2.5 transition-all">
-                    Read article <ArrowRight size={14} />
-                  </span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+                  <h2 className="font-black text-slate-900 text-base leading-snug mb-3 flex-1">{post.title}</h2>
+                  <p className="text-slate-500 text-sm leading-relaxed mb-5">{post.excerpt}</p>
+                  <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100">
+                    <span className="text-slate-400 text-xs">{post.date}</span>
+                    <Link href={`/blog/${post.slug}`} className="inline-flex items-center gap-1.5 text-primary-700 font-semibold text-xs hover:gap-2.5 transition-all">
+                      Read article <ArrowRight size={12} />
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </section>
   );

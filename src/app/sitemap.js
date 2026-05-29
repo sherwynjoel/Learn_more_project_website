@@ -7,7 +7,6 @@ const staticRoutes = [
   { url: `${BASE}/pricing`,       priority: 0.9,  changeFrequency: 'monthly' },
   { url: `${BASE}/training`,      priority: 0.8,  changeFrequency: 'monthly' },
   { url: `${BASE}/faq`,           priority: 0.8,  changeFrequency: 'monthly' },
-  { url: `${BASE}/team`,          priority: 0.7,  changeFrequency: 'monthly' },
   { url: `${BASE}/blog`,          priority: 0.8,  changeFrequency: 'weekly'  },
   { url: `${BASE}/about`,         priority: 0.7,  changeFrequency: 'monthly' },
   { url: `${BASE}/contact`,       priority: 0.9,  changeFrequency: 'monthly' },

@@ -13,6 +13,10 @@ const categories = [
         a: 'No. We build projects based on published IEEE research papers — the same methodology your college expects. You understand every component, can explain every design decision, and the project is unique to your batch. Thousands of students have used centers like ours and cleared their submissions without any issues.',
       },
       {
+        q: 'How do I explain the project in my viva if I didn\'t build it myself?',
+        a: 'This is the most common concern — and we handle it directly. We spend 2–3 sessions walking you through every part of the project: what each component does, why you chose it, and how the circuit/code works. By viva day, you genuinely understand the project. We also give you a Q&A sheet with 30–50 likely questions and model answers written in your own voice, not technical jargon.',
+      },
+      {
         q: 'Do you come to my college for submission or viva?',
         a: 'We do not attend vivas — but we prepare you so thoroughly that you won\'t need us there. Our viva Q&A preparation covers 30–50 likely questions with full answers. We also do a mock viva session with you before your actual date.',
       },
@@ -21,12 +25,20 @@ const categories = [
         a: 'Every project we deliver is tested and working before handover. We test under real conditions and document test results. If something fails after delivery due to a hardware defect, we support repair or replacement at no extra cost.',
       },
       {
+        q: 'Is the project unique? Will my classmate get the same project?',
+        a: 'We track which topics we have given to which college and batch. We will not give the same project to two students from the same batch at the same college. Your project will have a unique implementation even if the base domain is similar.',
+      },
+      {
+        q: 'Can 4 members of my batch share one project and split the cost?',
+        a: 'Yes — most final year projects are team-based (2–4 members). We build the project as a single deliverable for your team. Each member gets separate viva preparation so everyone can present confidently. The cost is per project, not per student.',
+      },
+      {
         q: 'Can I make changes to the project after delivery?',
         a: 'Yes — minor modifications and bug fixes are covered under our support period (1–6 months depending on your package). Major scope changes may have an additional cost, which we discuss transparently upfront.',
       },
       {
-        q: 'Is the project unique? Will my classmate get the same project?',
-        a: 'We track which topics we have given to which college and batch. We will not give the same project to two students from the same batch at the same college. Your project will have a unique implementation even if the base domain is similar.',
+        q: 'What if my college has a plagiarism check for the project report?',
+        a: 'All project reports we write are original — not copy-pasted from the internet. We write them based on your specific implementation and reference the IEEE paper correctly. Reports consistently pass Turnitin and Urkund checks. We have never had a plagiarism rejection.',
       },
     ],
   },
@@ -42,8 +54,16 @@ const categories = [
         a: 'The main variables are hardware complexity (sensor count, custom PCB vs. off-shelf), domain (Bio-Medical hardware is more expensive than a software project), and whether you need IEEE publication guidance. We give you a fixed quote before you commit — no surprises at delivery.',
       },
       {
+        q: 'What is the difference between your standard and premium packages?',
+        a: 'Standard includes: working hardware/software, full project report, synopsis, PPT, circuit diagrams, source code, and 30+ viva Q&A. Premium adds: IEEE paper draft ready for submission, journal selection guidance, publication fee assistance, and extended 6-month support. Both packages include mock viva preparation.',
+      },
+      {
         q: 'Do you give discounts for groups or referrals?',
         a: 'Yes. If you refer a friend who takes a project, you get a discount on your next project or purchase. Contact us for current referral offers.',
+      },
+      {
+        q: 'Can I get a receipt or invoice for my payment?',
+        a: 'Yes, we provide a proper invoice for all payments. If your institution or parents require a formal billing document, just let us know at the time of payment.',
       },
       {
         q: 'What if I am not satisfied with the delivery?',
@@ -67,8 +87,16 @@ const categories = [
         a: 'Both options are available. Students in Coimbatore can visit our center at Ram Nagar for hands-on sessions. Students from other cities can do everything over WhatsApp, video call, and courier delivery for hardware.',
       },
       {
+        q: 'How does hardware delivery work if I\'m outside Coimbatore?',
+        a: 'We ship the completed hardware via courier (typically Speed Post or DTDC) across Tamil Nadu and all of India. Delivery takes 2–4 days after dispatch. We pack everything securely and insure high-value components. We share tracking details and are available on call when you unbox and test it.',
+      },
+      {
         q: 'What documentation do I get with my project?',
-        a: 'Standard package includes: full project report (40–60 pages), synopsys, PowerPoint presentation, circuit/block diagrams, complete source code with comments, and 30+ viva Q&A. Premium adds IEEE paper draft and publication guidance.',
+        a: 'Standard package includes: full project report (40–60 pages), synopsis, PowerPoint presentation, circuit/block diagrams, complete source code with comments, and 30+ viva Q&A. Premium adds IEEE paper draft and publication guidance.',
+      },
+      {
+        q: 'Do I own the hardware after delivery? Can I keep it?',
+        a: 'Yes — the hardware, components, and code are 100% yours after delivery. You can keep it, demo it at interviews, or use it for further research. We do not ask for it back.',
       },
     ],
   },
@@ -84,12 +112,41 @@ const categories = [
         a: 'Absolutely. Many students come with a concept from a research paper or industry application. We evaluate feasibility, suggest improvements, and build it. Custom projects are our specialty.',
       },
       {
+        q: 'My college specified a particular software or microcontroller. Can you work with it?',
+        a: 'Yes. If your department has specified a tool (e.g., MATLAB, Keil, Proteus, Arduino, Raspberry Pi) or a particular technology, tell us upfront and we will build accordingly. We work with all commonly used academic tools and platforms.',
+      },
+      {
         q: 'Do you do simulation-only projects or real hardware?',
         a: 'We strongly recommend hardware projects — they score better in vivas and stand out for placements. We do MATLAB Simulink, PSIM, and software simulations as well, typically for Power Electronics projects where physical hardware is impractical.',
       },
       {
+        q: 'Can I use this project to apply for placements or internships?',
+        a: 'Absolutely — a well-documented, working hardware project is one of the strongest things you can show in a technical interview. We help you frame the project clearly on your resume: problem statement, technologies used, outcome. Several students have landed placements at companies like Bosch, Wipro, and L&T specifically because of their project.',
+      },
+      {
         q: 'What makes your Bio-Medical projects special?',
         a: 'We are the only center in Coimbatore with dedicated expertise in Bio-Medical engineering projects. We source specialized sensors (NIR, ECG, SpO2, EMG), design medical-grade signal processing circuits, and have guided multiple students to patent filing for their Bio-Medical innovations.',
+      },
+    ],
+  },
+  {
+    label: 'IEEE Paper & Publication',
+    faqs: [
+      {
+        q: 'Do you help with writing and publishing an IEEE paper?',
+        a: 'Yes — our premium package includes a full IEEE-format paper draft based on your project. We help you select the right journal or conference (Scopus-indexed, SCI, or IEEE Xplore), format the paper correctly, and guide you through the submission process. We have helped 200+ students get published.',
+      },
+      {
+        q: 'Is an IEEE paper mandatory for final year submission?',
+        a: 'It depends on your college and degree level. For M.E./M.Tech and some autonomous B.E. institutions, a journal publication is mandatory or earns bonus marks. For most B.E. students it is optional but highly recommended — it adds significant weight during placements and higher studies applications.',
+      },
+      {
+        q: 'How long does it take to get an IEEE paper published?',
+        a: 'Conference papers (IEEE, Springer) typically take 4–8 weeks from submission to acceptance. Journal publications (Scopus, SCI) take 2–6 months. We help you pick the right target based on your deadline. If your submission date is close, we guide you toward faster-turnaround conferences.',
+      },
+      {
+        q: 'What is the publication fee and who pays it?',
+        a: 'Most reputed journals charge a publication fee (typically ₹5,000–₹20,000 depending on the journal). This is separate from our service fee. We are transparent about these costs upfront. We can also suggest free-to-publish IEEE conference options where the fee is waived for student authors.',
       },
     ],
   },

@@ -16,7 +16,6 @@ const primaryLinks = [
 const moreLinks = [
   { href: '/pricing',  label: 'Pricing' },
   { href: '/blog',     label: 'Blog' },
-  { href: '/team',     label: 'Our Team' },
   { href: '/faq',      label: 'FAQ' },
 ];
 

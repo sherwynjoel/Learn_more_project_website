@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import {
   Cpu, Wifi, Brain, Bot, HeartPulse, Zap, Wrench, Code2,
-  MessageCircle, ArrowRight, ChevronRight, Sparkles,
+  MessageCircle, ChevronRight, Sparkles,
 } from 'lucide-react';
-import { projectStore } from '@/lib/adminStore';
+import TopicsSearch from './TopicsSearch';
+import { allTopics } from './topicsData';
 
 const domains = [
   {
@@ -160,15 +161,31 @@ const difficultyColor = {
 export default function ProjectsPage() {
   const [active, setActive] = useState('All');
   const [adminProjects, setAdminProjects] = useState([]);
+  const [domainOverrides, setDomainOverrides] = useState([]);
 
   useEffect(() => {
-    fetch('https://raw.githubusercontent.com/sherwynjoel/Learn_more_project_website/main/data/projects.json', { cache: 'no-store' })
-      .then(r => r.json())
-      .then(data => setAdminProjects(Array.isArray(data) ? data : []))
-      .catch(() => {});
+    const base = process.env.NODE_ENV === 'development' ? '/api/content' : '/api.php';
+    fetch(`${base}?type=projects`).then(r => r.ok ? r.json() : []).then(data => setAdminProjects(Array.isArray(data) ? data : [])).catch(() => {});
+    fetch(`${base}?type=domains`).then(r => r.ok ? r.json() : []).then(data => setDomainOverrides(Array.isArray(data) ? data : [])).catch(() => {});
   }, []);
 
-  const filtered = active === 'All' ? domains : domains.filter((d) => d.title === active);
+  const overrideMap = Object.fromEntries(domainOverrides.map(o => [o.id, o]));
+
+  const effectiveDomains = domains
+    .filter(d => !overrideMap[d.title]?.hidden)
+    .map(d => {
+      const ov = overrideMap[d.title];
+      if (!ov) return d;
+      return {
+        ...d,
+        count:        ov.count        || d.count,
+        desc:         ov.desc         || d.desc,
+        platforms:    ov.platforms    ? ov.platforms.split(',').map(p => p.trim()).filter(Boolean) : d.platforms,
+        sampleTopics: ov.sampleTopics ? ov.sampleTopics.split('\n').map(t => t.trim()).filter(Boolean).slice(0, 6) : d.sampleTopics,
+      };
+    });
+
+  const filtered = active === 'All' ? effectiveDomains : effectiveDomains.filter((d) => d.title === active);
 
   return (
     <>
@@ -183,7 +200,7 @@ export default function ProjectsPage() {
         </div>
       </section>
 
-      {/* ── Admin-added projects ── */}
+      {/* Admin-added projects */}
       {adminProjects.length > 0 && (
         <section className="py-10 bg-primary-50 border-b border-primary-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -193,13 +210,11 @@ export default function ProjectsPage() {
               <span className="text-xs font-bold text-primary-700 bg-primary-100 px-2 py-0.5 rounded-full">{adminProjects.length} added</span>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {adminProjects.map((proj) => (
+              {adminProjects.map(proj => (
                 <div key={proj.id} className="bg-white rounded-2xl border border-primary-100 p-5">
                   <div className="flex items-center gap-2 mb-3 flex-wrap">
                     <span className="text-xs font-semibold text-primary-700 bg-primary-50 px-2 py-0.5 rounded-full border border-primary-100">{proj.domain}</span>
-                    {proj.difficulty && (
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${difficultyColor[proj.difficulty] || 'text-slate-600 bg-slate-100'}`}>{proj.difficulty}</span>
-                    )}
+                    {proj.difficulty && <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${difficultyColor[proj.difficulty] || 'text-slate-600 bg-slate-100'}`}>{proj.difficulty}</span>}
                     {proj.duration && <span className="text-xs text-slate-400">{proj.duration}</span>}
                   </div>
                   <p className="font-bold text-slate-900 text-sm leading-snug mb-2">{proj.title}</p>
@@ -232,7 +247,7 @@ export default function ProjectsPage() {
             >
               All Domains
             </button>
-            {domains.map((d) => {
+            {effectiveDomains.map((d) => {
               const c = colorMap[d.color];
               const isActive = active === d.title;
               return (
@@ -324,6 +339,8 @@ export default function ProjectsPage() {
           })}
         </div>
       </section>
+
+      <TopicsSearch topics={allTopics} />
 
       {/* Bottom CTA */}
       <section className="py-16 bg-primary-700">

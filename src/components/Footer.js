@@ -20,7 +20,6 @@ const quickLinks = [
   { href: '/training',  label: 'Training & Courses' },
   { href: '/pricing',   label: 'Pricing' },
   { href: '/faq',       label: 'FAQ' },
-  { href: '/team',      label: 'Our Team' },
   { href: '/blog',      label: 'Blog & Resources' },
   { href: '/about',     label: 'About Us' },
   { href: '/contact',   label: 'Contact' },

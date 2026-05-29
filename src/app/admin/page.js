@@ -1,286 +1,331 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import { adminAuth, blogStore, projectStore, builtinBlogStore, domainOverrideStore } from '@/lib/adminStore';
 import {
-  Lock, LogOut, Plus, Trash2, BookOpen, FolderOpen,
-  Download, Eye, AlertTriangle, CheckCircle2, X, Pencil,
+  LogOut, Plus, Pencil, Trash2, LayoutDashboard,
+  BookOpen, FolderKanban, Loader2, CheckCircle2, XCircle, RotateCcw,
 } from 'lucide-react';
-import { adminAuth, blogStore, projectStore, hiddenStore } from '@/lib/adminStore';
 
-const HARDCODED_BLOGS = [
-  { slug: 'top-final-year-projects-ece-2025', category: 'Project Ideas', title: 'Top 20 Final Year Projects for ECE Students in 2025', readTime: '8 min read', date: 'May 2025' },
-  { slug: 'how-to-clear-final-year-viva', category: 'Viva Prep', title: 'How to Clear Your Final Year Viva Without Panicking', readTime: '6 min read', date: 'April 2025' },
-  { slug: 'embedded-vs-iot-final-year-project', category: 'Comparison', title: 'Embedded Systems vs IoT: Which Domain Should You Pick?', readTime: '5 min read', date: 'March 2025' },
+// ── Built-in blogs (editable via PHP overrides) ───────────────────────────────
+
+const BUILTIN_BLOGS = [
+  {
+    id: 'top-final-year-projects-ece-2025',
+    title: 'Top 20 Final Year Projects for ECE Students in 2025',
+    category: 'Project Ideas', readTime: '8 min read', date: 'May 2025',
+    excerpt: 'A curated list of high-scoring, implementable project ideas across Embedded AI, IoT, Bio-Medical, and Communication — with difficulty ratings and IEEE paper references for each.',
+    content: '',
+  },
+  {
+    id: 'how-to-clear-final-year-viva',
+    title: 'How to Clear Your Final Year Viva Without Panicking',
+    category: 'Viva Prep', readTime: '6 min read', date: 'April 2025',
+    excerpt: 'The 30 questions every evaluator asks and how to answer them confidently — even if you did not build the project yourself. Tested by 7,000+ students who passed their vivas.',
+    content: '',
+  },
+  {
+    id: 'embedded-vs-iot-final-year-project',
+    title: 'Embedded Systems vs IoT: Which Domain Should You Pick for Your Final Year?',
+    category: 'Comparison', readTime: '5 min read', date: 'March 2025',
+    excerpt: 'A straight comparison of scope, hardware cost, viva complexity, and placement value — so you can make an informed choice before committing to a topic.',
+    content: '',
+  },
 ];
 
-const HARDCODED_PROJECTS = [
-  { domain: 'Embedded Systems', count: '500+', sample: 'Smart Home Automation, RFID Attendance, Wearable Fall Detection, CAN Bus Vehicle Diagnostics...' },
-  { domain: 'IoT Projects', count: '400+', sample: 'Smart Precision Agriculture, Industrial Machine Monitoring, GPS Vehicle Tracking...' },
-  { domain: 'AI / Machine Learning', count: '350+', sample: 'Edge AI Defect Detection, Driver Drowsiness Detection, Crop Disease Prediction...' },
-  { domain: 'Bio-Medical', count: '250+', sample: 'ECG Monitoring, Portable SpO2 Monitor, Seizure Detection, Smart Pill Dispenser...' },
-  { domain: 'Power Electronics', count: '200+', sample: 'Solar MPPT Controller, Grid-Tied Inverter, EV Battery BMS...' },
-  { domain: 'Robotics', count: '200+', sample: 'Autonomous Navigation, Swarm Robotics, Robotic Arm, Fire-Fighting Robot...' },
-  { domain: 'Software Development', count: '300+', sample: 'AI Chatbot, Blockchain Land Registry, Face Recognition Attendance...' },
-  { domain: 'Mechanical', count: '150+', sample: 'Wearable Exoskeleton, Hydroponic System, Active Suspension...' },
+// ── Built-in domains (editable via PHP overrides) ────────────────────────────
+
+const BUILTIN_DOMAINS = [
+  {
+    id: 'Embedded Systems', count: '500+',
+    desc: 'Design and develop microcontroller-based systems with real hardware, firmware, and sensor integration. Covers bare-metal programming through RTOS-based designs.',
+    platforms: 'Arduino UNO/MEGA, ARM Cortex M3/M4, PIC Microcontrollers, ATMEL AVR, STM32, ESP32/ESP8266, Raspberry Pi, BeagleBone',
+    sampleTopics: 'Smart Home Automation with Voice Control\nWearable Fall Detection System for Elderly\nRFID-Based Attendance Management System\nAutomated Plant Watering Using Soil Sensors\nCAN Bus Vehicle Diagnostics System\nReal-Time Object Tracking with Servo Motors',
+  },
+  {
+    id: 'IoT Projects', count: '400+',
+    desc: 'Build internet-connected devices that collect, transmit, and act on real-world data. From smart home to industrial IoT deployments.',
+    platforms: 'ESP32, Raspberry Pi, Arduino IoT Cloud, AWS IoT Core, Azure IoT Hub, MQTT Protocol, Node-RED, ThingSpeak',
+    sampleTopics: 'Smart Precision Agriculture with ML Predictions\nIndustrial Machine Health Monitoring\nSmart Grid Energy Management System\nGPS-Based Vehicle Tracking with Geofencing\nAir Quality Monitoring Dashboard\nIoT-Based Cold Chain Logistics Tracker',
+  },
+  {
+    id: 'AI / Machine Learning', count: '350+',
+    desc: 'Develop intelligent systems using machine learning, deep learning, and computer vision. Includes edge AI deployments on embedded hardware.',
+    platforms: 'Python, TensorFlow, PyTorch, OpenCV, Scikit-learn, Keras, Raspberry Pi (Edge AI), Google Colab',
+    sampleTopics: 'Edge AI Defect Detection on Production Lines\nDriver Drowsiness Detection using CNN\nNLP-Based Resume Screening System\nFacial Recognition Attendance System\nCrop Disease Prediction using Deep Learning\nSentiment Analysis of Social Media Data',
+  },
+  {
+    id: 'Robotics', count: '200+',
+    desc: 'Design and build autonomous and semi-autonomous robotic systems — from industrial arms to mobile robots and drone platforms.',
+    platforms: 'Arduino, Raspberry Pi, ROS, L298N Motor Driver, Servo Motors, 3D Printed Chassis, Ultrasonic Sensors, Vision Systems',
+    sampleTopics: 'Autonomous Line-Following Robot with PID\nRobotic Arm for Pick-and-Place (5-DOF)\nSwarm Robotics Communication System\nObstacle-Avoidance Differential Drive Robot\nSnake Robot for Search and Rescue\nDrone-Based Parcel Delivery Prototype',
+  },
+  {
+    id: 'Bio-Medical Engineering', count: '150+',
+    desc: 'The only Coimbatore center with dedicated Bio-Medical expertise. Projects for BME, ECE, and CSE students targeting the healthcare sector.',
+    platforms: 'STM32, Arduino, Raspberry Pi, AD8232 (ECG), MAX30100 (SpO2), BLE 5.0, NIR Sensors, MATLAB',
+    sampleTopics: 'Non-Invasive Blood Glucose Monitor (NIR)\nPortable 12-Lead ECG with Arrhythmia Detection\nSmart Prosthetic Hand with EMG Control\nFall Detection Alert for ICU Patients\nWearable SpO2 & Heart Rate Monitor\nAI-Powered Retinal Disease Screening',
+  },
+  {
+    id: 'Power Electronics', count: '250+',
+    desc: 'Simulate and implement energy conversion circuits, motor drives, renewable energy systems, and smart grid components.',
+    platforms: 'MATLAB Simulink, PSIM, TI LaunchPad, IGBT/MOSFET Drivers, Solar Panels, DC-DC Converters, Motor Drives, PLC',
+    sampleTopics: 'MPPT Solar Charge Controller Design\nEV Battery Management System (BMS)\nBidirectional DC-DC Converter for Microgrids\nVariable Frequency Drive for Induction Motor\nSmart Street Lighting with Dimming Control\nWireless Power Transfer System (WPT)',
+  },
+  {
+    id: 'Mechanical Projects', count: '180+',
+    desc: 'Full design-to-fabrication pipeline using CAD tools. Projects include structural analysis, prototyping, and manufacturing.',
+    platforms: 'SolidWorks, CATIA V5, AutoCAD, ANSYS, PRO-E, CNC Machining, 3D Printing, Fabrication Lab',
+    sampleTopics: 'Design & Analysis of Composite Leaf Spring\nRegenerative Braking System for Two-Wheelers\nAutomated Guided Vehicle (AGV) Design\nExoskeleton Arm for Rehabilitation\nSolar-Powered Water Desalination Unit\nHydraulic Scissor Lift Mechanism',
+  },
+  {
+    id: 'Software Development', count: '300+',
+    desc: 'Web, mobile, and cloud applications. Data science pipelines, cybersecurity tools, and enterprise software projects.',
+    platforms: 'Python (Django/Flask), React / Next.js, Node.js, Java Spring Boot, Android (Kotlin), Flutter, MySQL / MongoDB, Firebase',
+    sampleTopics: 'Blockchain-Based Academic Certificate Verification\nAI Chatbot for Hospital Patient Intake\nReal-Time Collaborative Code Editor\nE-Learning Platform with Progress Tracking\nSmart Traffic Management with Computer Vision\nMental Health Monitoring Mobile App',
+  },
 ];
 
-const BLOG_CATEGORIES = ['Project Ideas', 'Viva Prep', 'Comparison', 'Career', 'IoT', 'AI / ML', 'Embedded'];
-const DOMAINS = ['Embedded Systems', 'IoT Projects', 'AI / Machine Learning', 'Bio-Medical', 'Power Electronics', 'Robotics', 'Software Development', 'Mechanical'];
-const DIFFICULTIES = ['Easy', 'Medium', 'Hard'];
+const BLOG_CATEGORIES = ['Project Ideas', 'Viva Prep', 'IEEE Paper Writing', 'Hardware Tutorials', 'Comparison', 'Placement Tips'];
+const PROJECT_DOMAINS = BUILTIN_DOMAINS.map(d => d.id);
 
-const emptyBlog = { title: '', category: 'Project Ideas', excerpt: '', content: '', readTime: '5 min read' };
-const emptyProject = { title: '', domain: 'Embedded Systems', description: '', tech: '', difficulty: 'Medium', duration: '25–30 days' };
+const emptyBlog    = { title: '', category: '', excerpt: '', content: '', readTime: '' };
+const emptyProject = { title: '', domain: '', difficulty: '', duration: '', tech: '', description: '' };
 
-/* ─── Login Screen ─── */
+// ── Toast ─────────────────────────────────────────────────────────────────────
+
+function Toast({ msg, ok }) {
+  if (!msg) return null;
+  return (
+    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl shadow-xl text-sm font-semibold text-white ${ok ? 'bg-green-600' : 'bg-red-500'}`}>
+      {ok ? <CheckCircle2 size={16} /> : <XCircle size={16} />} {msg}
+    </div>
+  );
+}
+
+// ── Login ─────────────────────────────────────────────────────────────────────
+
 function LoginScreen({ onLogin }) {
   const [pw, setPw] = useState('');
-  const [error, setError] = useState('');
-
-  const submit = (e) => {
-    e.preventDefault();
-    if (!adminAuth.login(pw)) setError('Incorrect password. Try again.');
-    else onLogin();
-  };
-
+  const [err, setErr] = useState('');
+  const submit = (e) => { e.preventDefault(); if (adminAuth.login(pw)) onLogin(); else setErr('Wrong password.'); };
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <div className="flex justify-center mb-8">
-          <Image src="/logo.png" alt="LearnMore Projects" width={160} height={54} className="h-12 w-auto brightness-200" />
-        </div>
-        <div className="bg-white rounded-3xl p-8 shadow-2xl">
-          <div className="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center mb-5">
-            <Lock size={22} className="text-primary-700" />
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+      <div className="w-full max-w-sm bg-white rounded-3xl shadow-2xl p-8">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-primary-100 rounded-2xl mb-4">
+            <LayoutDashboard size={24} className="text-primary-700" />
           </div>
-          <h1 className="text-2xl font-black text-slate-900 mb-1">Admin Login</h1>
-          <p className="text-slate-400 text-sm mb-7">Enter your password to access the dashboard.</p>
-          <form onSubmit={submit} className="space-y-4">
-            <input
-              type="password"
-              value={pw}
-              onChange={(e) => { setPw(e.target.value); setError(''); }}
-              placeholder="Password"
-              className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400"
-              autoFocus
-            />
-            {error && (
-              <p className="text-rose-500 text-xs font-medium flex items-center gap-1"><X size={13} />{error}</p>
-            )}
-            <button type="submit" className="w-full bg-primary-700 hover:bg-primary-800 text-white font-bold py-3 rounded-xl transition-colors">
-              Sign In
-            </button>
-          </form>
+          <h1 className="text-2xl font-black text-slate-900">Admin Panel</h1>
+          <p className="text-slate-500 text-sm mt-1">LearnMore Projects</p>
         </div>
-        <p className="text-center text-slate-600 text-xs mt-6">
-          <Link href="/" className="hover:text-white transition-colors">← Back to website</Link>
-        </p>
+        <form onSubmit={submit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-bold text-slate-600 mb-1.5">Password</label>
+            <input type="password" value={pw} onChange={e => { setPw(e.target.value); setErr(''); }} placeholder="Enter admin password"
+              className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" autoFocus />
+            {err && <p className="text-red-500 text-xs mt-1.5">{err}</p>}
+          </div>
+          <button type="submit" className="w-full bg-primary-700 hover:bg-primary-800 text-white font-bold py-3 rounded-xl transition-colors">Login</button>
+        </form>
       </div>
     </div>
   );
 }
 
-/* ─── Blog Tab ─── */
-function BlogTab() {
+// ── Built-in Blog Edit Form ───────────────────────────────────────────────────
+
+function BuiltinBlogEditForm({ blog, override, onSave, onCancel, saving }) {
+  const [form, setForm] = useState({
+    title:    override?.title    ?? blog.title,
+    category: override?.category ?? blog.category,
+    readTime: override?.readTime ?? blog.readTime,
+    date:     override?.date     ?? blog.date,
+    excerpt:  override?.excerpt  ?? blog.excerpt,
+    content:  override?.content  ?? blog.content,
+  });
+  const field = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  return (
+    <div className="border-2 border-primary-200 rounded-2xl p-5 bg-primary-50 space-y-4 mt-2">
+      <p className="font-black text-slate-900 text-sm">Editing built-in post</p>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div><label className="block text-xs font-bold text-slate-600 mb-1">Title</label>
+          <input value={form.title} onChange={field('title')} className="w-full border border-slate-200 bg-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" /></div>
+        <div><label className="block text-xs font-bold text-slate-600 mb-1">Category</label>
+          <input value={form.category} onChange={field('category')} list="blog-cats-builtin" className="w-full border border-slate-200 bg-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+          <datalist id="blog-cats-builtin">{BLOG_CATEGORIES.map(c => <option key={c} value={c} />)}</datalist></div>
+      </div>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div><label className="block text-xs font-bold text-slate-600 mb-1">Read Time</label>
+          <input value={form.readTime} onChange={field('readTime')} placeholder="e.g. 5 min read" className="w-full border border-slate-200 bg-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" /></div>
+        <div><label className="block text-xs font-bold text-slate-600 mb-1">Date</label>
+          <input value={form.date} onChange={field('date')} placeholder="e.g. June 2025" className="w-full border border-slate-200 bg-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" /></div>
+      </div>
+      <div><label className="block text-xs font-bold text-slate-600 mb-1">Short Summary (shown on cards)</label>
+        <textarea value={form.excerpt} onChange={field('excerpt')} rows={3} className="w-full border border-slate-200 bg-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none" /></div>
+      <div><label className="block text-xs font-bold text-slate-600 mb-1">Full Content</label>
+        <textarea value={form.content} onChange={field('content')} rows={5} placeholder="Full article text..." className="w-full border border-slate-200 bg-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-y" /></div>
+      <div className="flex gap-3">
+        <button onClick={() => onSave({ id: blog.id, ...form })} disabled={saving} className="inline-flex items-center gap-2 bg-primary-700 hover:bg-primary-800 disabled:opacity-60 text-white font-bold px-5 py-2 rounded-xl text-sm transition-colors">
+          {saving ? <Loader2 size={13} className="animate-spin" /> : null} Save Changes
+        </button>
+        <button onClick={onCancel} className="text-slate-500 font-semibold text-sm px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors">Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Blog Tab ──────────────────────────────────────────────────────────────────
+
+function BlogTab({ toast }) {
   const [posts, setPosts] = useState([]);
-  const [hiddenBlogs, setHiddenBlogs] = useState([]);
+  const [builtinOverrides, setBuiltinOverrides] = useState([]);
   const [form, setForm] = useState(emptyBlog);
-  const [editingId, setEditingId] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [saved, setSaved] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [editingBuiltin, setEditingBuiltin] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [builtinSaving, setBuiltinSaving] = useState(false);
 
-  const refresh = async () => { setPosts(await blogStore.getAll()); };
-
-  useEffect(() => {
-    refresh();
-    setHiddenBlogs(hiddenStore.getHiddenBlogs());
-  }, []);
-
-  const openAdd = () => { setForm(emptyBlog); setEditingId(null); setShowForm(true); };
-  const openEdit = (post) => { setForm({ title: post.title, category: post.category, excerpt: post.excerpt || '', content: post.content || '', readTime: post.read_time || post.readTime || '5 min read' }); setEditingId(post.id); setShowForm(true); };
-  const closeForm = () => { setShowForm(false); setEditingId(null); setForm(emptyBlog); };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const loadAll = async () => {
     setLoading(true);
-    const payload = { title: form.title, category: form.category, excerpt: form.excerpt, content: form.content, read_time: form.readTime };
-    if (editingId) {
-      await blogStore.update({ id: editingId, ...payload });
-      setSaved('updated');
-    } else {
-      await blogStore.add(payload);
-      setSaved('added');
-    }
-    await refresh();
-    setLoading(false);
-    closeForm();
-    setTimeout(() => setSaved(''), 3000);
+    const [p, b] = await Promise.all([blogStore.getAll(), builtinBlogStore.getAll()]);
+    setPosts(p); setBuiltinOverrides(b); setLoading(false);
+  };
+  useEffect(() => { loadAll(); }, []);
+
+  const overrideMap = Object.fromEntries(builtinOverrides.map(o => [o.id, o]));
+  const field = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!form.title || !form.category) return toast('Title and category are required.', false);
+    setSaving(true);
+    const ok = editId ? await blogStore.update({ id: editId, ...form }) : await blogStore.add(form);
+    setSaving(false);
+    if (ok) { toast(editId ? 'Blog updated!' : 'Blog published!', true); setForm(emptyBlog); setEditId(null); loadAll(); }
+    else toast('Error — check your connection.', false);
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this blog post?')) return;
-    await blogStore.delete(id);
-    await refresh();
+  const startEdit = p => {
+    setForm({ title: p.title, category: p.category, excerpt: p.excerpt || '', content: p.content || '', readTime: p.readTime || '' });
+    setEditId(p.id); window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  const del = async id => {
+    if (!confirm('Delete this post?')) return;
+    if (await blogStore.delete(id)) { toast('Deleted.', true); loadAll(); } else toast('Error.', false);
   };
 
-  const handleBuiltinEdit = (post) => {
-    setForm({ title: post.title, category: post.category, excerpt: '', content: '', readTime: post.readTime });
-    setEditingId(null);
-    setShowForm(true);
+  const saveBuiltin = async (data) => {
+    setBuiltinSaving(true);
+    const ok = await builtinBlogStore.save(data);
+    setBuiltinSaving(false);
+    if (ok) { toast('Blog updated!', true); setEditingBuiltin(null); loadAll(); }
+    else toast('Error saving.', false);
   };
 
-  const handleBuiltinDelete = (slug) => {
-    if (!confirm('Hide this built-in article from the blog page?')) return;
-    hiddenStore.hideBuiltinBlog(slug);
-    setHiddenBlogs(hiddenStore.getHiddenBlogs());
+  const hideBuiltin = async (id) => {
+    if (!confirm('Hide this blog post from the site?')) return;
+    setBuiltinSaving(true);
+    const ok = await builtinBlogStore.save({ id, hidden: true });
+    setBuiltinSaving(false);
+    if (ok) { toast('Post hidden.', true); loadAll(); } else toast('Error.', false);
   };
 
-  const handleBuiltinRestore = (slug) => {
-    hiddenStore.showBuiltinBlog(slug);
-    setHiddenBlogs(hiddenStore.getHiddenBlogs());
+  const restoreBuiltin = async (id) => {
+    setBuiltinSaving(true);
+    const ok = await builtinBlogStore.restore(id);
+    setBuiltinSaving(false);
+    if (ok) { toast('Post restored.', true); loadAll(); } else toast('Error.', false);
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-black text-slate-900">Blog Posts</h2>
-          <p className="text-slate-400 text-sm mt-0.5">{posts.length + HARDCODED_BLOGS.length} total · {posts.length} by you · {HARDCODED_BLOGS.length} built-in</p>
-        </div>
-        <button onClick={openAdd}
-          className="flex items-center gap-2 bg-primary-700 hover:bg-primary-800 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors">
-          <Plus size={16} /> Add Blog Post
-        </button>
-      </div>
-
-      {saved && (
-        <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm font-medium px-4 py-3 rounded-xl mb-5">
-          <CheckCircle2 size={16} /> Blog post {saved} successfully!
-        </div>
-      )}
-
-      {showForm && (
-        <form onSubmit={handleSubmit} className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-6 space-y-4">
-          <h3 className="font-bold text-slate-900 text-base">{editingId ? 'Edit Blog Post' : 'New Blog Post'}</h3>
+    <div className="space-y-8">
+      {/* Add / Edit form */}
+      <div className="bg-white rounded-3xl border border-slate-100 p-6">
+        <h2 className="font-black text-slate-900 text-lg mb-5">{editId ? 'Edit Blog Post' : 'Add New Blog Post'}</h2>
+        <form onSubmit={submit} className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Title *</label>
-              <input required value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                placeholder="Blog post title" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200" />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Category *</label>
-              <input required list="blog-categories" value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                placeholder="Type or pick a category"
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200" />
-              <datalist id="blog-categories">
-                {BLOG_CATEGORIES.map(c => <option key={c} value={c} />)}
-              </datalist>
-            </div>
+            <div><label className="block text-xs font-bold text-slate-600 mb-1.5">Title *</label>
+              <input value={form.title} onChange={field('title')} placeholder="Blog post title" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" /></div>
+            <div><label className="block text-xs font-bold text-slate-600 mb-1.5">Category *</label>
+              <input value={form.category} onChange={field('category')} list="blog-cats" placeholder="e.g. Project Ideas" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+              <datalist id="blog-cats">{BLOG_CATEGORIES.map(c => <option key={c} value={c} />)}</datalist></div>
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Short Excerpt * <span className="font-normal text-slate-400">(shown on listing page)</span></label>
-            <textarea required value={form.excerpt} onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))}
-              rows={2} placeholder="Brief summary of the article..."
-              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary-200" />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Full Content * <span className="font-normal text-slate-400">(full article body)</span></label>
-            <textarea required value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
-              rows={8} placeholder="Write the full article content here. Use blank lines to separate paragraphs."
-              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary-200" />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Read Time</label>
-            <input value={form.readTime} onChange={e => setForm(f => ({ ...f, readTime: e.target.value }))}
-              placeholder="5 min read" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200" />
-          </div>
-          <div className="flex gap-3 pt-1">
-            <button type="submit" disabled={loading} className="bg-primary-700 hover:bg-primary-800 disabled:opacity-60 text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
-              {loading ? 'Saving...' : editingId ? 'Update Post' : 'Save Post'}
+          <div><label className="block text-xs font-bold text-slate-600 mb-1.5">Read Time</label>
+            <input value={form.readTime} onChange={field('readTime')} placeholder="e.g. 5 min read" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" /></div>
+          <div><label className="block text-xs font-bold text-slate-600 mb-1.5">Short Summary</label>
+            <textarea value={form.excerpt} onChange={field('excerpt')} placeholder="2-3 sentence summary" rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none" /></div>
+          <div><label className="block text-xs font-bold text-slate-600 mb-1.5">Full Content</label>
+            <textarea value={form.content} onChange={field('content')} placeholder="Full article content..." rows={6} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-y" /></div>
+          <div className="flex gap-3">
+            <button type="submit" disabled={saving} className="inline-flex items-center gap-2 bg-primary-700 hover:bg-primary-800 disabled:opacity-60 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors">
+              {saving ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}{saving ? 'Saving…' : editId ? 'Update Post' : 'Publish Post'}
             </button>
-            <button type="button" onClick={closeForm} className="border border-slate-200 text-slate-600 hover:bg-slate-100 font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
-              Cancel
-            </button>
+            {editId && <button type="button" onClick={() => { setForm(emptyBlog); setEditId(null); }} className="text-slate-500 font-semibold text-sm px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors">Cancel</button>}
           </div>
         </form>
-      )}
+      </div>
 
       {/* Admin-added posts */}
-      {posts.length > 0 && (
-        <div className="space-y-3 mb-8">
-          {posts.map(post => (
-            <div key={post.id} className="flex items-start justify-between gap-4 bg-white border border-primary-100 rounded-2xl px-5 py-4">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="text-xs font-semibold text-primary-700 bg-primary-50 px-2 py-0.5 rounded-full">{post.category}</span>
-                  <span className="text-xs font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">Admin Added</span>
-                  <span className="text-xs text-slate-400">{post.readTime}</span>
-                </div>
-                <p className="font-bold text-slate-900 text-sm leading-snug">{post.title}</p>
-                <p className="text-slate-500 text-xs mt-1 line-clamp-2">{post.excerpt}</p>
-              </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <a href={`/blog/view?id=${post.id}`} target="_blank" rel="noreferrer"
-                  className="p-2 text-slate-400 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors" title="View">
-                  <Eye size={15} />
-                </a>
-                <button onClick={() => openEdit(post)}
-                  className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
-                  <Pencil size={15} />
-                </button>
-                <button onClick={() => handleDelete(post.id)}
-                  className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Delete">
-                  <Trash2 size={15} />
-                </button>
-              </div>
+      <div className="bg-white rounded-3xl border border-slate-100 p-6">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="font-black text-slate-900 text-lg">Added Blog Posts <span className="text-slate-400 font-normal text-sm">({posts.length} added)</span></h2>
+          {loading && <Loader2 size={16} className="animate-spin text-slate-400" />}
+        </div>
+        {!loading && posts.length === 0 && <p className="text-slate-400 text-sm py-4 text-center">No admin-added blogs yet. Add one above.</p>}
+        <div className="space-y-3">
+          {posts.map(p => (
+            <div key={p.id} className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl">
+              <div className="flex-1 min-w-0"><p className="font-bold text-slate-900 text-sm truncate">{p.title}</p><p className="text-slate-500 text-xs mt-0.5">{p.category} · {new Date(p.createdAt).toLocaleDateString('en-IN')}</p></div>
+              <button onClick={() => startEdit(p)} className="p-2 text-slate-400 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"><Pencil size={15} /></button>
+              <button onClick={() => del(p.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={15} /></button>
             </div>
           ))}
         </div>
-      )}
+      </div>
 
-      {/* Built-in posts */}
-      <div>
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Built-in Articles</p>
+      {/* Built-in blog posts — now editable */}
+      <div className="bg-white rounded-3xl border border-slate-100 p-6">
+        <div className="mb-5">
+          <h2 className="font-black text-slate-900 text-lg">Built-in Blog Posts</h2>
+          <p className="text-xs text-slate-400 mt-1">Edit the title, summary, content, or hide any built-in post from the site.</p>
+        </div>
         <div className="space-y-3">
-          {HARDCODED_BLOGS.map(post => {
-            const isHidden = hiddenBlogs.includes(post.slug);
+          {BUILTIN_BLOGS.map(blog => {
+            const ov = overrideMap[blog.id];
+            const isHidden = ov?.hidden === true;
+            const isEditing = editingBuiltin === blog.id;
+            const isCustomized = ov && !isHidden;
+
             return (
-              <div key={post.slug} className={`flex items-start justify-between gap-4 rounded-2xl px-5 py-4 border ${isHidden ? 'bg-rose-50 border-rose-100 opacity-60' : 'bg-slate-50 border-slate-200'}`}>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className="text-xs font-semibold text-slate-600 bg-slate-200 px-2 py-0.5 rounded-full">{post.category}</span>
-                    <span className="text-xs text-slate-400">{post.readTime}</span>
-                    <span className="text-xs text-slate-400">{post.date}</span>
-                    {isHidden && <span className="text-xs font-semibold text-rose-600 bg-rose-100 px-2 py-0.5 rounded-full">Hidden</span>}
+              <div key={blog.id}>
+                <div className={`flex items-center gap-3 p-4 rounded-2xl ${isHidden ? 'bg-red-50 border border-red-100' : 'bg-slate-50'}`}>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className={`font-bold text-sm truncate ${isHidden ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
+                        {ov?.title ?? blog.title}
+                      </p>
+                      {isCustomized && <span className="text-xs font-semibold bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full flex-shrink-0">Edited</span>}
+                      {isHidden && <span className="text-xs font-semibold bg-red-100 text-red-600 px-2 py-0.5 rounded-full flex-shrink-0">Hidden</span>}
+                    </div>
+                    <p className="text-slate-400 text-xs mt-0.5">{ov?.category ?? blog.category} · {ov?.date ?? blog.date}</p>
                   </div>
-                  <p className="font-bold text-slate-700 text-sm leading-snug">{post.title}</p>
-                </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  {!isHidden && (
-                    <a href={`/blog/${post.slug}`} target="_blank" rel="noreferrer"
-                      className="p-2 text-slate-400 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors" title="View">
-                      <Eye size={15} />
-                    </a>
-                  )}
-                  <button onClick={() => handleBuiltinEdit(post)}
-                    className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit (create new version)">
-                    <Pencil size={15} />
-                  </button>
                   {isHidden ? (
-                    <button onClick={() => handleBuiltinRestore(post.slug)}
-                      className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors text-xs font-semibold" title="Restore">
-                      Restore
+                    <button onClick={() => restoreBuiltin(blog.id)} disabled={builtinSaving} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors text-xs font-semibold">
+                      <RotateCcw size={13} /> Restore
                     </button>
                   ) : (
-                    <button onClick={() => handleBuiltinDelete(post.slug)}
-                      className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Hide from blog">
-                      <Trash2 size={15} />
-                    </button>
+                    <>
+                      <button onClick={() => setEditingBuiltin(isEditing ? null : blog.id)} className="p-2 text-slate-400 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"><Pencil size={15} /></button>
+                      <button onClick={() => hideBuiltin(blog.id)} disabled={builtinSaving} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={15} /></button>
+                    </>
                   )}
                 </div>
+                {isEditing && (
+                  <BuiltinBlogEditForm blog={blog} override={ov} onSave={saveBuiltin} onCancel={() => setEditingBuiltin(null)} saving={builtinSaving} />
+                )}
               </div>
             );
           })}
@@ -290,211 +335,208 @@ function BlogTab() {
   );
 }
 
-/* ─── Projects Tab ─── */
-function ProjectsTab() {
+// ── Domain Edit Form ──────────────────────────────────────────────────────────
+
+function DomainEditForm({ domain, override, onSave, onCancel, saving }) {
+  const [form, setForm] = useState({
+    count:        override?.count        ?? domain.count,
+    desc:         override?.desc         ?? domain.desc,
+    platforms:    override?.platforms    ?? domain.platforms,
+    sampleTopics: override?.sampleTopics ?? domain.sampleTopics,
+  });
+  const field = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  return (
+    <div className="border-2 border-primary-200 rounded-2xl p-5 bg-primary-50 space-y-4">
+      <p className="font-black text-slate-900 text-sm">Editing: {domain.id}</p>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-xs font-bold text-slate-600 mb-1">Project Count</label>
+          <input value={form.count} onChange={field('count')} placeholder="e.g. 600+" className="w-full border border-slate-200 bg-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+        </div>
+      </div>
+      <div>
+        <label className="block text-xs font-bold text-slate-600 mb-1">Description</label>
+        <textarea value={form.desc} onChange={field('desc')} rows={3} className="w-full border border-slate-200 bg-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none" />
+      </div>
+      <div>
+        <label className="block text-xs font-bold text-slate-600 mb-1">Platforms / Tools <span className="font-normal text-slate-400">(comma-separated)</span></label>
+        <textarea value={form.platforms} onChange={field('platforms')} rows={2} className="w-full border border-slate-200 bg-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none" />
+      </div>
+      <div>
+        <label className="block text-xs font-bold text-slate-600 mb-1">Sample Topics <span className="font-normal text-slate-400">(one per line, up to 6)</span></label>
+        <textarea value={form.sampleTopics} onChange={field('sampleTopics')} rows={5} className="w-full border border-slate-200 bg-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none font-mono" />
+      </div>
+      <div className="flex gap-3">
+        <button onClick={() => onSave({ id: domain.id, ...form })} disabled={saving} className="inline-flex items-center gap-2 bg-primary-700 hover:bg-primary-800 disabled:opacity-60 text-white font-bold px-5 py-2 rounded-xl text-sm transition-colors">
+          {saving ? <Loader2 size={13} className="animate-spin" /> : null} Save Changes
+        </button>
+        <button onClick={onCancel} className="text-slate-500 font-semibold text-sm px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors">Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Projects Tab ──────────────────────────────────────────────────────────────
+
+function ProjectsTab({ toast }) {
   const [projects, setProjects] = useState([]);
-  const [hiddenProjects, setHiddenProjects] = useState([]);
+  const [overrides, setOverrides] = useState([]);
   const [form, setForm] = useState(emptyProject);
-  const [editingId, setEditingId] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [saved, setSaved] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [editingDomain, setEditingDomain] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [domainSaving, setDomainSaving] = useState(false);
 
-  const refresh = async () => { setProjects(await projectStore.getAll()); };
-
-  useEffect(() => {
-    refresh();
-    setHiddenProjects(hiddenStore.getHiddenProjects());
-  }, []);
-
-  const difficultyColor = { Easy: 'text-green-700 bg-green-50', Medium: 'text-amber-700 bg-amber-50', Hard: 'text-rose-700 bg-rose-50' };
-
-  const openAdd = () => { setForm(emptyProject); setEditingId(null); setShowForm(true); };
-  const openEdit = (proj) => { setForm({ title: proj.title, domain: proj.domain, description: proj.description || '', tech: proj.tech || '', difficulty: proj.difficulty || 'Medium', duration: proj.duration || '25–30 days' }); setEditingId(proj.id); setShowForm(true); };
-  const closeForm = () => { setShowForm(false); setEditingId(null); setForm(emptyProject); };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const loadAll = async () => {
     setLoading(true);
-    if (editingId) {
-      await projectStore.update({ id: editingId, ...form });
-      setSaved('updated');
-    } else {
-      await projectStore.add(form);
-      setSaved('added');
-    }
-    await refresh();
-    setLoading(false);
-    closeForm();
-    setTimeout(() => setSaved(''), 3000);
+    const [p, o] = await Promise.all([projectStore.getAll(), domainOverrideStore.getAll()]);
+    setProjects(p); setOverrides(o); setLoading(false);
+  };
+  useEffect(() => { loadAll(); }, []);
+
+  const overrideMap = Object.fromEntries(overrides.map(o => [o.id, o]));
+  const field = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!form.title || !form.domain) return toast('Title and domain are required.', false);
+    setSaving(true);
+    const ok = editId ? await projectStore.update({ id: editId, ...form }) : await projectStore.add(form);
+    setSaving(false);
+    if (ok) { toast(editId ? 'Project updated!' : 'Project added!', true); setForm(emptyProject); setEditId(null); loadAll(); }
+    else toast('Error — check your connection.', false);
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this project?')) return;
-    await projectStore.delete(id);
-    await refresh();
+  const startEdit = p => { setForm({ title: p.title, domain: p.domain, difficulty: p.difficulty || '', duration: p.duration || '', tech: p.tech || '', description: p.description || '' }); setEditId(p.id); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const del = async id => { if (!confirm('Delete this project?')) return; if (await projectStore.delete(id)) { toast('Deleted.', true); loadAll(); } else toast('Error.', false); };
+
+  const saveDomain = async (data) => {
+    setDomainSaving(true);
+    const ok = await domainOverrideStore.save(data);
+    setDomainSaving(false);
+    if (ok) { toast(`${data.id} updated!`, true); setEditingDomain(null); loadAll(); }
+    else toast('Error saving domain.', false);
   };
 
-  const handleBuiltinProjectEdit = (d) => {
-    setForm({ title: '', domain: d.domain, description: '', tech: '', difficulty: 'Medium', duration: '25–30 days' });
-    setEditingId(null);
-    setShowForm(true);
+  const hideDomain = async (id) => {
+    if (!confirm(`Hide "${id}" from the projects page?`)) return;
+    setDomainSaving(true);
+    const ok = await domainOverrideStore.save({ id, hidden: true });
+    setDomainSaving(false);
+    if (ok) { toast(`${id} hidden.`, true); loadAll(); }
+    else toast('Error.', false);
   };
 
-  const handleBuiltinProjectDelete = (domain) => {
-    if (!confirm('Hide this built-in domain from the projects page?')) return;
-    hiddenStore.hideBuiltinProject(domain);
-    setHiddenProjects(hiddenStore.getHiddenProjects());
-  };
-
-  const handleBuiltinProjectRestore = (domain) => {
-    hiddenStore.showBuiltinProject(domain);
-    setHiddenProjects(hiddenStore.getHiddenProjects());
+  const restoreDomain = async (id) => {
+    setDomainSaving(true);
+    const ok = await domainOverrideStore.restore(id);
+    setDomainSaving(false);
+    if (ok) { toast(`${id} restored.`, true); loadAll(); }
+    else toast('Error.', false);
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-black text-slate-900">Projects</h2>
-          <p className="text-slate-400 text-sm mt-0.5">{projects.length + HARDCODED_PROJECTS.length} total · {projects.length} by you · {HARDCODED_PROJECTS.length} built-in</p>
-        </div>
-        <button onClick={openAdd}
-          className="flex items-center gap-2 bg-primary-700 hover:bg-primary-800 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors">
-          <Plus size={16} /> Add Project
-        </button>
-      </div>
-
-      {saved && (
-        <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm font-medium px-4 py-3 rounded-xl mb-5">
-          <CheckCircle2 size={16} /> Project {saved} successfully!
-        </div>
-      )}
-
-      {showForm && (
-        <form onSubmit={handleSubmit} className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-6 space-y-4">
-          <h3 className="font-bold text-slate-900 text-base">{editingId ? 'Edit Project' : 'New Project'}</h3>
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Project Title *</label>
-            <input required value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-              placeholder="e.g., Smart Irrigation System using IoT" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200" />
+    <div className="space-y-8">
+      {/* Add / Edit project topic form */}
+      <div className="bg-white rounded-3xl border border-slate-100 p-6">
+        <h2 className="font-black text-slate-900 text-lg mb-5">{editId ? 'Edit Project Topic' : 'Add New Project Topic'}</h2>
+        <form onSubmit={submit} className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div><label className="block text-xs font-bold text-slate-600 mb-1.5">Project Title *</label>
+              <input value={form.title} onChange={field('title')} placeholder="e.g. Smart Water Quality Monitor" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" /></div>
+            <div><label className="block text-xs font-bold text-slate-600 mb-1.5">Domain *</label>
+              <input value={form.domain} onChange={field('domain')} list="proj-domains" placeholder="e.g. IoT Projects" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+              <datalist id="proj-domains">{PROJECT_DOMAINS.map(d => <option key={d} value={d} />)}</datalist></div>
           </div>
-          <div className="grid sm:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Domain *</label>
-              <input required list="project-domains" value={form.domain} onChange={e => setForm(f => ({ ...f, domain: e.target.value }))}
-                placeholder="Type or pick a domain"
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200" />
-              <datalist id="project-domains">
-                {DOMAINS.map(d => <option key={d} value={d} />)}
-              </datalist>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Difficulty</label>
-              <select value={form.difficulty} onChange={e => setForm(f => ({ ...f, difficulty: e.target.value }))}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-200">
-                {DIFFICULTIES.map(d => <option key={d}>{d}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Duration</label>
-              <input value={form.duration} onChange={e => setForm(f => ({ ...f, duration: e.target.value }))}
-                placeholder="25–30 days" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200" />
-            </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div><label className="block text-xs font-bold text-slate-600 mb-1.5">Difficulty</label>
+              <select value={form.difficulty} onChange={field('difficulty')} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                <option value="">Select difficulty</option><option>Easy</option><option>Medium</option><option>Hard</option>
+              </select></div>
+            <div><label className="block text-xs font-bold text-slate-600 mb-1.5">Duration</label>
+              <input value={form.duration} onChange={field('duration')} placeholder="e.g. 4–6 weeks" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" /></div>
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Description *</label>
-            <textarea required value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-              rows={3} placeholder="What does this project do? What problem does it solve?"
-              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary-200" />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Technologies <span className="font-normal text-slate-400">(comma separated)</span></label>
-            <input value={form.tech} onChange={e => setForm(f => ({ ...f, tech: e.target.value }))}
-              placeholder="Arduino, ESP32, Python, MQTT" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200" />
-          </div>
-          <div className="flex gap-3 pt-1">
-            <button type="submit" disabled={loading} className="bg-primary-700 hover:bg-primary-800 disabled:opacity-60 text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
-              {loading ? 'Saving...' : editingId ? 'Update Project' : 'Save Project'}
+          <div><label className="block text-xs font-bold text-slate-600 mb-1.5">Technologies (comma-separated)</label>
+            <input value={form.tech} onChange={field('tech')} placeholder="e.g. Arduino, ESP32, MQTT" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" /></div>
+          <div><label className="block text-xs font-bold text-slate-600 mb-1.5">Description</label>
+            <textarea value={form.description} onChange={field('description')} placeholder="Brief project description..." rows={3} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none" /></div>
+          <div className="flex gap-3">
+            <button type="submit" disabled={saving} className="inline-flex items-center gap-2 bg-primary-700 hover:bg-primary-800 disabled:opacity-60 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors">
+              {saving ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}{saving ? 'Saving…' : editId ? 'Update Project' : 'Add Project'}
             </button>
-            <button type="button" onClick={closeForm} className="border border-slate-200 text-slate-600 hover:bg-slate-100 font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
-              Cancel
-            </button>
+            {editId && <button type="button" onClick={() => { setForm(emptyProject); setEditId(null); }} className="text-slate-500 font-semibold text-sm px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors">Cancel</button>}
           </div>
         </form>
-      )}
+      </div>
 
-      {/* Admin-added projects */}
-      {projects.length > 0 && (
-        <div className="space-y-3 mb-8">
-          {projects.map(proj => (
-            <div key={proj.id} className="flex items-start justify-between gap-4 bg-white border border-primary-100 rounded-2xl px-5 py-4">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="text-xs font-semibold text-primary-700 bg-primary-50 px-2 py-0.5 rounded-full">{proj.domain}</span>
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${difficultyColor[proj.difficulty] || 'text-slate-600 bg-slate-100'}`}>{proj.difficulty}</span>
-                  <span className="text-xs font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">Admin Added</span>
-                  {proj.duration && <span className="text-xs text-slate-400">{proj.duration}</span>}
+      {/* Admin-added project topics */}
+      <div className="bg-white rounded-3xl border border-slate-100 p-6">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="font-black text-slate-900 text-lg">Added Project Topics <span className="text-slate-400 font-normal text-sm">({projects.length} added)</span></h2>
+          {loading && <Loader2 size={16} className="animate-spin text-slate-400" />}
+        </div>
+        {!loading && projects.length === 0 && <p className="text-slate-400 text-sm py-4 text-center">No admin-added project topics yet.</p>}
+        <div className="space-y-3">
+          {projects.map(p => (
+            <div key={p.id} className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl">
+              <div className="flex-1 min-w-0"><p className="font-bold text-slate-900 text-sm truncate">{p.title}</p><p className="text-slate-500 text-xs mt-0.5">{p.domain}{p.difficulty ? ` · ${p.difficulty}` : ''}</p></div>
+              <button onClick={() => startEdit(p)} className="p-2 text-slate-400 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"><Pencil size={15} /></button>
+              <button onClick={() => del(p.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={15} /></button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Built-in domain management */}
+      <div className="bg-white rounded-3xl border border-slate-100 p-6">
+        <div className="mb-5">
+          <h2 className="font-black text-slate-900 text-lg">Built-in Project Domains</h2>
+          <p className="text-xs text-slate-400 mt-1">Edit content, update project counts, or hide domains from the projects page.</p>
+        </div>
+        <div className="space-y-3">
+          {BUILTIN_DOMAINS.map(domain => {
+            const ov = overrideMap[domain.id];
+            const isHidden = ov?.hidden === true;
+            const isEditing = editingDomain === domain.id;
+            const isCustomized = ov && !isHidden;
+
+            return (
+              <div key={domain.id}>
+                <div className={`flex items-center gap-3 p-4 rounded-2xl ${isHidden ? 'bg-red-50 border border-red-100' : 'bg-slate-50'}`}>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className={`font-bold text-sm ${isHidden ? 'text-slate-400 line-through' : 'text-slate-900'}`}>{domain.id}</p>
+                      {isCustomized && <span className="text-xs font-semibold bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full">Edited</span>}
+                      {isHidden && <span className="text-xs font-semibold bg-red-100 text-red-600 px-2 py-0.5 rounded-full">Hidden</span>}
+                    </div>
+                    <p className="text-slate-400 text-xs mt-0.5">{ov?.count ?? domain.count} topics</p>
+                  </div>
+                  {isHidden ? (
+                    <button onClick={() => restoreDomain(domain.id)} disabled={domainSaving} className="inline-flex items-center gap-1.5 p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors text-xs font-semibold">
+                      <RotateCcw size={14} /> Restore
+                    </button>
+                  ) : (
+                    <>
+                      <button onClick={() => setEditingDomain(isEditing ? null : domain.id)} className="p-2 text-slate-400 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"><Pencil size={15} /></button>
+                      <button onClick={() => hideDomain(domain.id)} disabled={domainSaving} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={15} /></button>
+                    </>
+                  )}
                 </div>
-                <p className="font-bold text-slate-900 text-sm leading-snug">{proj.title}</p>
-                {proj.description && <p className="text-slate-500 text-xs mt-1 line-clamp-2">{proj.description}</p>}
-                {proj.tech && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {proj.tech.split(',').map(t => t.trim()).filter(Boolean).map(t => (
-                      <span key={t} className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{t}</span>
-                    ))}
+
+                {isEditing && (
+                  <div className="mt-2 ml-0">
+                    <DomainEditForm
+                      domain={domain}
+                      override={ov}
+                      onSave={saveDomain}
+                      onCancel={() => setEditingDomain(null)}
+                      saving={domainSaving}
+                    />
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <button onClick={() => openEdit(proj)}
-                  className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
-                  <Pencil size={15} />
-                </button>
-                <button onClick={() => handleDelete(proj.id)}
-                  className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Delete">
-                  <Trash2 size={15} />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Built-in domains */}
-      <div>
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Built-in Domains</p>
-        <div className="space-y-3">
-          {HARDCODED_PROJECTS.map(d => {
-            const isHidden = hiddenProjects.includes(d.domain);
-            return (
-              <div key={d.domain} className={`flex items-start justify-between gap-4 rounded-2xl px-5 py-4 border ${isHidden ? 'bg-rose-50 border-rose-100 opacity-60' : 'bg-slate-50 border-slate-200'}`}>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className="text-xs font-semibold text-slate-600 bg-slate-200 px-2 py-0.5 rounded-full">{d.domain}</span>
-                    <span className="text-xs text-slate-400">{d.count} topics</span>
-                    {isHidden && <span className="text-xs font-semibold text-rose-600 bg-rose-100 px-2 py-0.5 rounded-full">Hidden</span>}
-                  </div>
-                  <p className="text-slate-500 text-xs leading-relaxed">{d.sample}</p>
-                </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <button onClick={() => handleBuiltinProjectEdit(d)}
-                    className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Add project to this domain">
-                    <Pencil size={15} />
-                  </button>
-                  {isHidden ? (
-                    <button onClick={() => handleBuiltinProjectRestore(d.domain)}
-                      className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors text-xs font-semibold" title="Restore">
-                      Restore
-                    </button>
-                  ) : (
-                    <button onClick={() => handleBuiltinProjectDelete(d.domain)}
-                      className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Hide from projects page">
-                      <Trash2 size={15} />
-                    </button>
-                  )}
-                </div>
-              </div>
             );
           })}
         </div>
@@ -503,112 +545,68 @@ function ProjectsTab() {
   );
 }
 
-/* ─── Main Admin Panel ─── */
+// ── Main Page ─────────────────────────────────────────────────────────────────
+
 export default function AdminPage() {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [tab, setTab] = useState('blog');
+  const [tab, setTab] = useState('blogs');
+  const [toastMsg, setToastMsg] = useState('');
+  const [toastOk, setToastOk] = useState(true);
 
-  useEffect(() => {
-    setLoggedIn(adminAuth.isLoggedIn());
-  }, []);
+  useEffect(() => { setLoggedIn(adminAuth.isLoggedIn()); }, []);
 
-  const handleExport = () => {
-    const data = {
-      blogs: blogStore.getAll(),
-      projects: projectStore.getAll(),
-      exportedAt: new Date().toISOString(),
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'learnmore-content.json';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+  const toast = (msg, ok) => { setToastMsg(msg); setToastOk(ok); setTimeout(() => setToastMsg(''), 3500); };
+  const logout = () => { adminAuth.logout(); setLoggedIn(false); };
 
   if (!loggedIn) return <LoginScreen onLogin={() => setLoggedIn(true)} />;
 
-  const blogs = blogStore.getAll();
-  const projects = projectStore.getAll();
+  const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Admin Navbar */}
-      <header className="bg-white border-b border-slate-100 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
+      <Toast msg={toastMsg} ok={toastOk} />
+      {isLocalhost && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2.5 text-center text-xs text-amber-800 font-semibold">
+          ⚠ Running locally — add/edit/delete requires the PHP API on Hostinger. Upload the site to test live changes.
+        </div>
+      )}
+
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Image src="/logo.png" alt="LearnMore" width={120} height={40} className="h-8 w-auto" />
-            <span className="text-xs font-bold text-primary-700 bg-primary-50 px-2 py-0.5 rounded-full border border-primary-100">Admin</span>
+            <div className="w-8 h-8 bg-primary-100 rounded-xl flex items-center justify-center">
+              <LayoutDashboard size={16} className="text-primary-700" />
+            </div>
+            <div>
+              <p className="font-black text-slate-900 text-sm leading-none">LearnMore Admin</p>
+              <p className="text-slate-400 text-xs mt-0.5">Content Manager</p>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={handleExport}
-              className="flex items-center gap-1.5 text-slate-600 hover:text-primary-700 border border-slate-200 hover:border-primary-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
-              <Download size={13} /> Export JSON
-            </button>
-            <Link href="/" target="_blank"
-              className="flex items-center gap-1.5 text-slate-600 hover:text-primary-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
-              <Eye size={13} /> View Site
-            </Link>
-            <button onClick={() => { adminAuth.logout(); setLoggedIn(false); }}
-              className="flex items-center gap-1.5 text-rose-600 hover:bg-rose-50 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
+          <div className="flex items-center gap-3">
+            <a href="/" target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-primary-700 hover:underline hidden sm:block">View Site →</a>
+            <button onClick={logout} className="inline-flex items-center gap-1.5 text-slate-500 hover:text-red-600 text-xs font-semibold px-3 py-2 rounded-lg hover:bg-red-50 transition-colors">
               <LogOut size={13} /> Logout
             </button>
           </div>
         </div>
       </header>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        {/* Warning banner */}
-        <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 mb-6">
-          <AlertTriangle size={18} className="text-amber-600 flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-amber-800 font-semibold text-sm">Content is stored in this browser only</p>
-            <p className="text-amber-700 text-xs mt-0.5">
-              Visitors on other devices won't see your additions. Use <strong>Export JSON</strong> to share the data so it can be permanently added to the website code.
-            </p>
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-white rounded-2xl border border-slate-100 px-6 py-5">
-            <p className="text-3xl font-black text-primary-700">{blogs.length + HARDCODED_BLOGS.length}</p>
-            <p className="text-slate-500 text-sm font-medium mt-0.5">Total Blog Posts</p>
-            <p className="text-xs text-slate-400 mt-1">{blogs.length} by you · {HARDCODED_BLOGS.length} built-in</p>
-          </div>
-          <div className="bg-white rounded-2xl border border-slate-100 px-6 py-5">
-            <p className="text-3xl font-black text-primary-700">{projects.length + HARDCODED_PROJECTS.length}</p>
-            <p className="text-slate-500 text-sm font-medium mt-0.5">Total Projects</p>
-            <p className="text-xs text-slate-400 mt-1">{projects.length} by you · {HARDCODED_PROJECTS.length} built-in</p>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="bg-white rounded-3xl border border-slate-100 overflow-hidden">
-          <div className="flex border-b border-slate-100">
-            {[
-              { key: 'blog', label: 'Blog Posts', icon: BookOpen },
-              { key: 'projects', label: 'Projects', icon: FolderOpen },
-            ].map(({ key, label, icon: Icon }) => (
-              <button
-                key={key}
-                onClick={() => setTab(key)}
-                className={`flex items-center gap-2 px-6 py-4 text-sm font-semibold border-b-2 transition-colors ${
-                  tab === key
-                    ? 'border-primary-700 text-primary-700'
-                    : 'border-transparent text-slate-500 hover:text-slate-700'
-                }`}
-              >
-                <Icon size={16} />
-                {label}
+      <div className="bg-white border-b border-slate-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="flex gap-1">
+            {[{ key: 'blogs', label: 'Blogs', icon: BookOpen }, { key: 'projects', label: 'Projects', icon: FolderKanban }].map(({ key, label, icon: Icon }) => (
+              <button key={key} onClick={() => setTab(key)}
+                className={`inline-flex items-center gap-2 px-5 py-3.5 text-sm font-bold border-b-2 transition-colors ${tab === key ? 'border-primary-700 text-primary-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
+                <Icon size={15} /> {label}
               </button>
             ))}
           </div>
-          <div className="p-6">
-            {tab === 'blog' ? <BlogTab /> : <ProjectsTab />}
-          </div>
         </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+        {tab === 'blogs'    && <BlogTab toast={toast} />}
+        {tab === 'projects' && <ProjectsTab toast={toast} />}
       </div>
     </div>
   );
