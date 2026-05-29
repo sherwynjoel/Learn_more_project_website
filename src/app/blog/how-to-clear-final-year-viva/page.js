@@ -2,9 +2,11 @@ import Link from 'next/link';
 import { ArrowLeft, Clock, MessageCircle, CheckCircle2, ChevronRight, AlertCircle } from 'lucide-react';
 
 export const metadata = {
-  title: 'How to Clear Your Final Year Viva | LearnMore Projects',
+  title: 'How to Clear Final Year Viva Without Panicking | LearnMore Projects Coimbatore',
   description:
-    'The 30 most common final year project viva questions with model answers. Tested by 7,000+ students. Includes tips for hardware and software projects.',
+    'The 30 most common final year viva questions with model answers — tested by 7000+ students. Tips for hardware (Embedded, IoT) and software projects. Viva preparation guide by LearnMore Projects, Coimbatore.',
+  keywords:
+    'how to clear final year viva, final year viva questions answers, viva preparation tips, viva questions embedded systems, viva questions IoT project, project viva guide, how to answer viva questions, engineering viva preparation coimbatore',
 };
 
 const sections = [

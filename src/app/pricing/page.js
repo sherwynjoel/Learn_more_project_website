@@ -2,8 +2,11 @@ import Link from 'next/link';
 import { MessageCircle, ArrowRight, Clock, Package, Award, Shield } from 'lucide-react';
 
 export const metadata = {
-  title: 'Pricing | LearnMore Projects — Final Year Project Packages',
-  description: 'Transparent pricing for final year projects in Coimbatore. WhatsApp us for a custom project quote tailored to your branch, budget, and deadline.',
+  title: 'Project Pricing | Final Year Project Cost Coimbatore | LearnMore Projects',
+  description:
+    'Transparent final year project pricing in Coimbatore. Affordable packages for BE, B.Tech, M.Tech, MCA students — Embedded Systems, IoT, AI/ML, Robotics. No hidden costs. WhatsApp for a custom project quote.',
+  keywords:
+    'final year project cost coimbatore, how much does final year project cost, project center pricing coimbatore, final year project packages coimbatore, embedded project price, IoT project cost, AI ML project price, affordable final year projects coimbatore',
 };
 
 

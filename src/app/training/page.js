@@ -5,9 +5,11 @@ import {
 } from 'lucide-react';
 
 export const metadata = {
-  title: 'Training & Courses | LearnMore Projects Coimbatore',
+  title: 'Technical Training & Internship Coimbatore | Embedded IoT AI/ML | LearnMore Projects',
   description:
-    'Hands-on technical training in Embedded Systems, IoT, AI/ML, Robotics, and more. Internship programs, certified courses, and placement support.',
+    'Hands-on technical training in Embedded Systems, IoT, AI/ML, Robotics, Python, MATLAB in Coimbatore. Internship programs, inplant training, certified courses, and placement support for engineering students.',
+  keywords:
+    'technical training coimbatore, embedded systems training coimbatore, IoT training coimbatore, machine learning course coimbatore, AI training coimbatore, internship coimbatore, inplant training coimbatore, Python training coimbatore, MATLAB training, Arduino training, robotics training, placement training coimbatore, certified courses coimbatore',
 };
 
 const courses = [

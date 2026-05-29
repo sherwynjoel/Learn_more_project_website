@@ -9,6 +9,15 @@ import Reveal from '@/components/Reveal';
 import CountUp from '@/components/CountUp';
 import ProjectQuiz from '@/components/ProjectQuiz';
 
+export const metadata = {
+  title: 'LearnMore Projects | Best Final Year Project Center in Coimbatore',
+  description:
+    'Best final year project center in Coimbatore — Ramnagar, near Gandhipuram. IEEE-standard projects for BE, B.Tech, M.Tech, MCA, BCA students. Embedded Systems, IoT, AI/ML, Robotics, Bio-Medical, Power Electronics. Full hardware kit + viva support + documentation. 7000+ students served.',
+  keywords:
+    'best final year project center coimbatore, final year projects coimbatore 2025, project center gandhipuram coimbatore, project center ramnagar coimbatore, IEEE projects coimbatore, embedded systems projects, IoT projects, AI ML projects, machine learning projects coimbatore, robotics projects, bio-medical projects, power electronics projects, python projects BE students, MATLAB projects coimbatore, Arduino projects, Raspberry Pi projects, viva preparation coimbatore, project with IEEE publication, internship training coimbatore',
+  alternates: { canonical: '/' },
+};
+
 const techStack = [
   'Arduino', 'Raspberry Pi', 'STM32', 'ESP32', 'TensorFlow Lite',
   'OpenCV', 'MATLAB Simulink', 'AWS IoT', 'Python', 'React.js',
@@ -149,8 +158,8 @@ export default function HomePage() {
               </h1>
 
               <p className="animate-fade-in-d2 mt-5 text-base sm:text-lg text-slate-500 leading-relaxed max-w-lg">
-                Coimbatore's leading final year project & R&D center. IEEE-standard projects with complete hardware, code, and documentation for{' '}
-                <strong className="text-slate-700 font-semibold">Embedded, IoT, AI/ML, Robotics, Bio-Medical</strong> and beyond.
+                Coimbatore's best final year project & R&D center — Ramnagar, near Gandhipuram. IEEE-standard projects with complete hardware, code, and documentation for{' '}
+                <strong className="text-slate-700 font-semibold">Embedded Systems, IoT, AI/ML, Robotics, Bio-Medical</strong> and beyond.
               </p>
 
               <div className="animate-fade-in-d2 mt-7 sm:mt-9 flex flex-col sm:flex-row gap-3">
@@ -684,6 +693,32 @@ export default function HomePage() {
               </div>
             </div>
           </Reveal>
+        </div>
+      </section>
+
+      {/* ─── SEO: DOMAINS + SERVICE AREAS ─── */}
+      <section className="py-10 bg-slate-50 border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-3 gap-8 text-sm text-slate-500">
+            <div>
+              <p className="font-bold text-slate-700 mb-3 text-xs uppercase tracking-wider">Project Domains</p>
+              <p className="leading-relaxed">
+                Embedded Systems · IoT Projects · AI / Machine Learning · Robotics · Bio-Medical Engineering · Power Electronics · Mechanical Projects · Software Development · MATLAB Projects · Python Projects · Deep Learning · Computer Vision · VLSI · Mechatronics
+              </p>
+            </div>
+            <div>
+              <p className="font-bold text-slate-700 mb-3 text-xs uppercase tracking-wider">Degrees We Serve</p>
+              <p className="leading-relaxed">
+                B.E. (ECE, EEE, CSE, Mech, Civil, IT) · B.Tech · M.E. · M.Tech · MCA · BCA · B.Sc · M.Sc · Diploma · MPhil · PhD — for IEEE projects, mini projects, real-time projects, and research projects.
+              </p>
+            </div>
+            <div>
+              <p className="font-bold text-slate-700 mb-3 text-xs uppercase tracking-wider">Serving Students From</p>
+              <p className="leading-relaxed">
+                Coimbatore · Gandhipuram · Ramnagar · RS Puram · Saibaba Colony · Peelamedu · Singanallur · Vadavalli · Pollachi · Salem · Erode · Tiruppur — and outstation students via courier delivery.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 

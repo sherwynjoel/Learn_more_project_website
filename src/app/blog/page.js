@@ -2,9 +2,11 @@ import { MessageCircle } from 'lucide-react';
 import BlogListClient from './BlogListClient';
 
 export const metadata = {
-  title: 'Blog & Resources | LearnMore Projects — Final Year Project Guides',
+  title: 'Blog | Final Year Project Guides for Engineering Students | LearnMore Coimbatore',
   description:
-    'Free guides, tips, and project ideas for engineering students. Learn how to pick a final year project, clear your viva, and get placed.',
+    'Free final year project guides for engineering students in Coimbatore — how to choose a project topic, clear viva, write an IEEE paper, pick between Embedded vs IoT. Expert tips from LearnMore Projects.',
+  keywords:
+    'final year project guide, how to choose final year project topic, viva preparation tips coimbatore, IEEE paper writing guide, embedded systems tutorial, IoT project ideas 2025, machine learning projects for students, final year project blog coimbatore, how to clear viva without panicking, ECE project ideas 2025, CSE project ideas',
 };
 
 const hardcodedPosts = [

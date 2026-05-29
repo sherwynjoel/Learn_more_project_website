@@ -5,9 +5,11 @@ import {
 } from 'lucide-react';
 
 export const metadata = {
-  title: 'About Us | LearnMore Projects — Coimbatore R&D Center',
+  title: 'About Us | LearnMore Projects — Best Project Center Coimbatore',
   description:
-    "Learn about LearnMore Projects — Coimbatore's leading final year project and R&D center. Our mission, team, and what makes us different.",
+    "About LearnMore Projects — Coimbatore's best final year project & R&D center. 10+ years, 7000+ students, 5000+ projects across 8 engineering domains. Located in Ramnagar, serving Gandhipuram, RS Puram, Peelamedu, and all of Coimbatore.",
+  keywords:
+    'about learnmore projects, best project center coimbatore, final year project center history coimbatore, R&D center coimbatore, project guidance coimbatore, project center ramnagar coimbatore, engineering project center tamil nadu',
 };
 
 const values = [

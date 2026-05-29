@@ -2,9 +2,11 @@ import Link from 'next/link';
 import { ArrowLeft, Clock, MessageCircle, CheckCircle2, ChevronRight } from 'lucide-react';
 
 export const metadata = {
-  title: 'Top 20 Final Year Projects for ECE Students 2025 | LearnMore Projects',
+  title: 'Top 20 Final Year Projects for ECE Students 2025 | LearnMore Projects Coimbatore',
   description:
-    'Best final year project ideas for B.E./B.Tech ECE in 2025 — Embedded AI, IoT, Bio-Medical, Power Electronics, and Communication. With IEEE references and difficulty ratings.',
+    'Best final year project ideas for BE/B.Tech ECE 2025 — Embedded AI, IoT, Bio-Medical, Power Electronics, VLSI, Communication. With IEEE paper references, difficulty ratings, and hardware cost estimates. From LearnMore Projects, Coimbatore.',
+  keywords:
+    'final year projects ECE 2025, ECE project ideas coimbatore, top ECE projects, embedded systems project ECE, IoT project ECE, bio-medical project ECE, power electronics project ECE, VLSI project 2025, best ECE final year projects, IEEE project ECE, ECE project topics list',
 };
 
 const projects = [

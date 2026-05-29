@@ -6,17 +6,17 @@ import SiteShell from '@/components/SiteShell';
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
 export const metadata = {
-  title: 'LearnMore Projects | Final Year Project & R&D Center in Coimbatore',
+  title: 'LearnMore Projects | Best Final Year Project Center in Coimbatore',
   description:
-    "LearnMore Projects is Coimbatore's leading final year project and R&D center specializing in Embedded Systems, IoT, AI/ML, Robotics, Bio-Medical, Power Electronics, and Mechanical projects. IEEE-standard projects with complete hardware, code, and documentation support.",
+    "Best final year project center in Coimbatore (Ramnagar, Gandhipuram). IEEE-standard projects for BE, B.Tech, M.Tech, MCA students — Embedded Systems, IoT, AI/ML, Robotics, Bio-Medical, Power Electronics. Full hardware kit, source code, documentation, viva support. 7000+ students served.",
   keywords:
-    'final year projects coimbatore, embedded systems projects, IoT projects, AI ML projects, robotics projects, bio-medical projects, project center coimbatore, IEEE projects coimbatore, final year project center, LearnMore Projects',
+    'best final year project center coimbatore, final year projects coimbatore, project center gandhipuram, project center ramnagar coimbatore, IEEE projects coimbatore, embedded systems projects coimbatore, IoT projects coimbatore, AI ML projects coimbatore, machine learning projects coimbatore, robotics projects coimbatore, bio-medical projects coimbatore, power electronics projects coimbatore, mechanical projects coimbatore, software development projects coimbatore, final year project ideas 2025, BE final year project coimbatore, BTech final year projects coimbatore, MTech project coimbatore, ME project coimbatore, MCA project center coimbatore, BCA projects coimbatore, BSc final year project, viva preparation coimbatore, IEEE paper writing coimbatore, research paper publication students coimbatore, project with publication coimbatore, internship with project coimbatore, inplant training coimbatore, project training institute coimbatore, prototype development coimbatore, Arduino projects coimbatore, Raspberry Pi projects final year, Python projects BE students, MATLAB projects coimbatore, deep learning final year projects, computer vision projects, VLSI projects coimbatore, final year project cost coimbatore, real time projects coimbatore, hardware projects coimbatore, mini projects coimbatore, project guidance coimbatore, LearnMore Projects',
   metadataBase: new URL('https://learnmoreprojects.in'),
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'LearnMore Projects | Final Year Project & R&D Center',
+    title: 'LearnMore Projects | Best Final Year Project Center in Coimbatore',
     description:
-      "Coimbatore's premier R&D center for final year engineering projects — Embedded, IoT, AI/ML, Robotics, Bio-Medical and beyond.",
+      "Coimbatore's best final year project center — IEEE-standard Embedded, IoT, AI/ML, Robotics, Bio-Medical projects. 7000+ students, full hardware kit + viva support.",
     type: 'website',
     url: 'https://learnmoreprojects.in',
     siteName: 'LearnMore Projects',
@@ -25,9 +25,9 @@ export const metadata = {
 
 const localBusinessSchema = {
   '@context': 'https://schema.org',
-  '@type': 'LocalBusiness',
+  '@type': ['LocalBusiness', 'EducationalOrganization'],
   name: 'LearnMore Projects',
-  description: "Coimbatore's leading final year project & R&D center. IEEE-standard projects with complete hardware, code, and documentation.",
+  description: "Coimbatore's best final year project center. IEEE-standard projects with complete hardware, code, and documentation. Embedded Systems, IoT, AI/ML, Robotics, Bio-Medical, Power Electronics. Serving BE, B.Tech, M.Tech, MCA, BCA students.",
   url: 'https://learnmoreprojects.in',
   telephone: '+917550191838',
   email: 'info@learnmoreprojects.in',
@@ -46,6 +46,24 @@ const localBusinessSchema = {
     latitude: 11.0087,
     longitude: 76.9740,
   },
+  areaServed: [
+    { '@type': 'City', name: 'Coimbatore' },
+    { '@type': 'City', name: 'Gandhipuram' },
+    { '@type': 'City', name: 'Ramnagar' },
+  ],
+  knowsAbout: [
+    'Embedded Systems Final Year Projects',
+    'IoT Final Year Projects',
+    'AI Machine Learning Projects',
+    'Robotics Projects',
+    'Bio-Medical Engineering Projects',
+    'Power Electronics Projects',
+    'Mechanical Engineering Projects',
+    'Software Development Projects',
+    'IEEE Paper Writing and Publication',
+    'Final Year Project Guidance Coimbatore',
+    'Viva Preparation for Engineering Students',
+  ],
   openingHoursSpecification: [
     {
       '@type': 'OpeningHoursSpecification',

@@ -2,9 +2,11 @@ import Link from 'next/link';
 import { ArrowLeft, Clock, MessageCircle, CheckCircle2, X, ChevronRight } from 'lucide-react';
 
 export const metadata = {
-  title: 'Embedded Systems vs IoT Final Year Project | LearnMore Projects',
+  title: 'Embedded Systems vs IoT: Which Final Year Project to Pick? | LearnMore Coimbatore',
   description:
-    'Should you pick Embedded Systems or IoT for your final year project? A straight comparison of cost, viva complexity, placement value, and timeline.',
+    'Embedded Systems vs IoT for final year project — a straight comparison of hardware cost, viva complexity, placement value, and timeline. Pick the right domain for your branch. By LearnMore Projects, Coimbatore.',
+  keywords:
+    'embedded systems vs IoT final year project, which domain to choose final year project, embedded systems project vs IoT project, IoT vs embedded comparison, final year project domain selection, best domain for BE final year project, ECE final year project choice',
 };
 
 const comparison = [

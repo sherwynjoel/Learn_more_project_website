@@ -192,10 +192,10 @@ export default function ProjectsPage() {
       {/* Header */}
       <section className="bg-gradient-to-br from-primary-950 to-primary-800 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-primary-300 font-semibold text-sm uppercase tracking-wider mb-3">What We Build</p>
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">Final Year Projects</h1>
+          <p className="text-primary-300 font-semibold text-sm uppercase tracking-wider mb-3">Best Project Center in Coimbatore</p>
+          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">Final Year Projects in Coimbatore</h1>
           <p className="text-primary-200 text-lg max-w-2xl mx-auto leading-relaxed">
-            5,000+ project topics across 8 engineering domains. Every project includes IEEE paper, source code, hardware, and complete documentation.
+            5,000+ project topics across 8 engineering domains — Embedded Systems, IoT, AI/ML, Robotics, Bio-Medical, Power Electronics, Mechanical, and Software. Every project includes IEEE base paper, source code, hardware, and complete documentation.
           </p>
         </div>
       </section>
