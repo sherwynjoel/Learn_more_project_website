@@ -148,7 +148,7 @@ export default function ContactPage() {
               <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
                 <iframe
                   title="LearnMore Projects Location"
-                  src="https://maps.google.com/maps?q=202+Nehru+St,+Peranaidu+Layout,+Ram+Nagar,+Coimbatore,+Tamil+Nadu+641009,+India&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                  src="https://maps.google.com/maps?q=11.0087,76.9740&z=17&output=embed"
                   width="100%"
                   height="200"
                   style={{ border: 0 }}
