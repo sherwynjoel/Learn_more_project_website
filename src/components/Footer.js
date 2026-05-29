@@ -86,7 +86,7 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-300">
+    <footer className="bg-slate-900 text-slate-300 pb-20 md:pb-0">
 
       {/* ── Top CTA strip ── */}
       <div className="bg-primary-700">
