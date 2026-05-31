@@ -13,6 +13,11 @@ export const metadata = {
     'best final year project center coimbatore, final year projects coimbatore, project center gandhipuram, project center ramnagar coimbatore, IEEE projects coimbatore, embedded systems projects coimbatore, IoT projects coimbatore, AI ML projects coimbatore, machine learning projects coimbatore, robotics projects coimbatore, bio-medical projects coimbatore, power electronics projects coimbatore, mechanical projects coimbatore, software development projects coimbatore, final year project ideas 2025, BE final year project coimbatore, BTech final year projects coimbatore, MTech project coimbatore, ME project coimbatore, MCA project center coimbatore, BCA projects coimbatore, BSc final year project, viva preparation coimbatore, IEEE paper writing coimbatore, research paper publication students coimbatore, project with publication coimbatore, internship with project coimbatore, inplant training coimbatore, project training institute coimbatore, prototype development coimbatore, Arduino projects coimbatore, Raspberry Pi projects final year, Python projects BE students, MATLAB projects coimbatore, deep learning final year projects, computer vision projects, VLSI projects coimbatore, final year project cost coimbatore, real time projects coimbatore, hardware projects coimbatore, mini projects coimbatore, project guidance coimbatore, LearnMore Projects',
   metadataBase: new URL('https://learnmoreprojects.in'),
   alternates: { canonical: '/' },
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
   openGraph: {
     title: 'LearnMore Projects | Best Final Year Project Center in Coimbatore',
     description:
@@ -83,6 +88,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        <link rel="icon" type="image/png" href="/logo.png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
